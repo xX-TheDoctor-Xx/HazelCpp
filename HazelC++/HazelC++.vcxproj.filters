@@ -1,0 +1,213 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Util">
+      <UniqueIdentifier>{0aec5280-ae35-427f-9f36-9876c75cf3cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Util">
+      <UniqueIdentifier>{17307b34-eac1-443c-bf44-5b37b43edee9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Udp">
+      <UniqueIdentifier>{13515601-4b2b-4798-87bb-61621df9cbf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Udp">
+      <UniqueIdentifier>{9159ed88-d663-41e8-86cd-b01b040d4763}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Tcp">
+      <UniqueIdentifier>{b4e50d1b-0a0a-4441-9406-3790504f3d36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tcp">
+      <UniqueIdentifier>{76285ca0-e4c2-4c95-b3e3-6f33c8e293ab}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Connection.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DataReceivedEventArgs.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hazel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DisconnectedEventArgs.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConnectionEndPoint.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConnectionStatistics.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoResetEvent.hpp">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="ConnectionListener.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NewConnectionEventArgs.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UdpConnection.hpp">
+      <Filter>Header Files\Udp</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkConnection.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.hpp">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="FragmentedMessages.hpp">
+      <Filter>Header Files\Udp</Filter>
+    </ClInclude>
+    <ClInclude Include="Fragment.hpp">
+      <Filter>Header Files\Udp</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet.hpp">
+      <Filter>Header Files\Udp</Filter>
+    </ClInclude>
+    <ClInclude Include="Stopwatch.hpp">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericFunction.hpp">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="HazelException.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UdpClientConnection.hpp">
+      <Filter>Header Files\Udp</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkEndPoint.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectPool.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UdpConnectionListener.hpp">
+      <Filter>Header Files\Udp</Filter>
+    </ClInclude>
+    <ClInclude Include="UdpServerConnection.hpp">
+      <Filter>Header Files\Udp</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkConnectionListener.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StateObject.hpp">
+      <Filter>Header Files\Tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpConnection.hpp">
+      <Filter>Header Files\Tcp</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkSocket.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LingerOption.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bytes.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Connection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DataReceivedEventArgs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DisconnectedEventArgs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConnectionStatistics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoResetEvent.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="ConnectionListener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NewConnectionEventArgs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UdpConnection.cpp">
+      <Filter>Source Files\Udp</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkConnection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Fragment.cpp">
+      <Filter>Source Files\Udp</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet.cpp">
+      <Filter>Source Files\Udp</Filter>
+    </ClCompile>
+    <ClCompile Include="Stopwatch.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="GenericFunction.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="UdpClientConnection.cpp">
+      <Filter>Source Files\Udp</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkEndPoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectPool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hazel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UdpConnectionListener.cpp">
+      <Filter>Source Files\Udp</Filter>
+    </ClCompile>
+    <ClCompile Include="UdpServerConnection.cpp">
+      <Filter>Source Files\Udp</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkConnectionListener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StateObject.cpp">
+      <Filter>Source Files\Tcp</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpConnection.cpp">
+      <Filter>Source Files\Tcp</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkSocket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LingerOption.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bytes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Text.txt" />
+  </ItemGroup>
+</Project>

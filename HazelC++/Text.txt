@@ -1,0 +1,13 @@
+check timer params
+
+finish UdpClientConnection
+
+finish UdpConnectionListener
+
+finish TcpConnection
+
+check if GenericFunction works
+
+check autoresetevent and find a way to change it to manual
+
+check hazel.cpp
