@@ -57,8 +57,5 @@ namespace Hazel
 			delete[] bytes;
 			bytes = nullptr;
 		}
-
-		this->bytes = bytes;
-		this->length = length;
 	}
 }
