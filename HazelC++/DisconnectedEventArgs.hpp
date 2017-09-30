@@ -8,14 +8,15 @@ namespace Hazel
 	class DisconnectedEventArgs
 	{
 		HazelException exception;
+		
+		static ObjectPool<DisconnectedEventArgs> object_pool;
+		static DisconnectedEventArgs CreateObject();
 
 	public:
 		DisconnectedEventArgs();
 		~DisconnectedEventArgs();
 
-		static ObjectPool<DisconnectedEventArgs> ObjectPool;
-		static DisconnectedEventArgs CreateObject();
-		DisconnectedEventArgs &GetObject();
+		static DisconnectedEventArgs &GetObject();
 
 		HazelException GetException();
 

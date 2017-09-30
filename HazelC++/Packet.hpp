@@ -4,6 +4,7 @@
 #include "Timer.hpp"
 #include "Stopwatch.hpp"
 #include "Bytes.hpp"
+#include "ObjectPool.hpp"
 
 #include <atomic>
 
@@ -13,12 +14,17 @@ namespace Hazel
 
 	class Packet
 	{
+		static ObjectPool<Packet> object_pool;
+		static Packet CreateObject();
+
 		Bytes data;
 		GenericFunction<void> ack_callback;
 		std::atomic_int last_timeout;
 		std::atomic_bool acknowledged;
 		std::atomic_int retransmissions;
 		Stopwatch stopwatch;
+
+		UdpConnection *con;
 
 	public:
 		Timer<UdpConnection*, Packet&> Timer;
@@ -29,7 +35,7 @@ namespace Hazel
 
 		~Packet();
 
-		void Set(Bytes data, GenericFunction<void, UdpConnection*, Packet&> &resend_action, int timeout, GenericFunction<void> &ack_callback);
+		void Set(Bytes data, UdpConnection *con, GenericFunction<void, UdpConnection*, Packet&> &resend_action, int timeout, GenericFunction<void> &ack_callback);
 		Bytes GetData();
 		int GetLastTimeout();
 		void IncrementLastTimeout(int value);
@@ -41,5 +47,7 @@ namespace Hazel
 		void InvokeAckCallback();
 		void StopwatchStop();
 		long long GetRoundTime();
+
+		static Packet &GetObject();
 	};
 }

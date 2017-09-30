@@ -6,7 +6,7 @@ namespace Hazel
 	{
 	}
 
-	NetworkEndPoint::NetworkEndPoint(const std::string & ip, unsigned short port)
+	NetworkEndPoint::NetworkEndPoint(const std::string & ip, ushort port)
 	{
 		endpoint = Poco::Net::SocketAddress(ip, port);
 	}

@@ -23,10 +23,10 @@ namespace Hazel
 	}
 
 	template<typename... Args>
-	void Timer<Args...>::Start()
+	void Timer<Args...>::Start(...)
 	{
 		if (!started)
-			t = std::thread(ActualTimer, this);
+			t = std::thread(ActualTimer, ...);
 		started = true;
 	}
 
@@ -44,15 +44,24 @@ namespace Hazel
 		started = false;
 	}
 
+	template<typename ...Args>
+	void Timer<Args...>::Reset()
+	{
+		if (IsRunning())
+			Stop();
+
+		SetInterval(0);
+		stop = false;
+		callback = GenericFunction<void, Args...>();
+	}
+
 	template<typename... Args>
-	void Timer<Args...>::ActualTimer(Timer * timer)
+	void Timer<Args...>::ActualTimer(Timer * timer, ...)
 	{
 		while (!timer->stop)
 		{
-			timer->callback.Call(params[0]); // fix this to include all params
+			timer->callback.Call(...); 
 			std::this_thread::sleep_for(std::chrono::milliseconds(timer->interval));
 		}
-
-
 	}
 }

@@ -1,5 +1,3 @@
-check timer params
-
 finish UdpClientConnection
 
 finish UdpConnectionListener
@@ -8,6 +6,8 @@ finish TcpConnection
 
 check if GenericFunction works
 
-check autoresetevent and find a way to change it to manual
+Cant get ManualResetEvent right mhhhhhhhhhhh
 
-check hazel.cpp
+check udpconnection::packet_resend_action
+
+check udpconnection::AcknowledgementMessageReceive

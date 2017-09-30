@@ -12,9 +12,7 @@ namespace Hazel
 
 	byte * Bytes::GetBytes()
 	{
-		if (length >= 0)
-			return bytes;
-		return nullptr;
+		return (length >= 0) ? bytes : nullptr;
 	}
 
 	int Bytes::GetLength()
@@ -24,14 +22,7 @@ namespace Hazel
 
 	void Bytes::SetBytes(byte * bytes, int length)
 	{
-		if (bytes)
-		{
-			delete[] bytes;
-			bytes = nullptr;
-		}
-
-		this->bytes = bytes;
-		this->length = length;
+		Clear();
 	}
 
 	byte & Bytes::operator[](int index)
@@ -46,11 +37,7 @@ namespace Hazel
 
 	Bytes & Bytes::operator=(const Bytes & other)
 	{
-		if (bytes)
-		{
-			delete[] bytes;
-			bytes = nullptr;
-		}
+		Clear();
 
 		bytes = other.bytes;
 		length = other.length;
@@ -61,5 +48,17 @@ namespace Hazel
 	bool Bytes::IsValid()
 	{
 		return GetLength() >= 0;
+	}
+
+	void Bytes::Clear()
+	{
+		if (bytes)
+		{
+			delete[] bytes;
+			bytes = nullptr;
+		}
+
+		this->bytes = bytes;
+		this->length = length;
 	}
 }

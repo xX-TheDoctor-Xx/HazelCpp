@@ -26,6 +26,7 @@ void closesocket(SOCKET socket)
 #endif
 
 typedef unsigned char byte;
+typedef unsigned short ushort;
 
 namespace Hazel
 {

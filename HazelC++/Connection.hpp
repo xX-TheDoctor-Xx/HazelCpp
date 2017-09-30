@@ -6,7 +6,7 @@
 #include "DisconnectedEventArgs.hpp"
 #include "NetworkEndPoint.hpp"
 #include "ConnectionStatistics.hpp"
-#include "AutoResetEvent.hpp"
+#include "ManualResetEvent.hpp"
 #include "HazelException.hpp"
 #include "GenericFunction.hpp"
 #include "Bytes.hpp"
@@ -45,6 +45,6 @@ namespace Hazel
 		bool WaitOnConnect(int timeout);
 
 	private:
-		AutoResetEvent connectionWaitLock;
+		ManualResetEvent connection_wait_lock;
 	};
 }

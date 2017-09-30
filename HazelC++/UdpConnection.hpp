@@ -12,10 +12,12 @@
 namespace Hazel
 {
 	void packet_resend_action(UdpConnection *conn, Packet &packet);
+	void KeepAliveTimerCallback(UdpConnection *con);
 
 	class UdpConnection : public NetworkConnection
 	{
 		friend void packet_resend_action(UdpConnection *conn, Packet &packet); // so that i can access the inacessible methods
+		friend void KeepAliveTimerCallback(UdpConnection *con);
 
 		//KeepAlive
 		int keep_alive_interval = 10000;
@@ -29,23 +31,23 @@ namespace Hazel
 
 		//Fragmented
 		std::atomic_ushort last_fragment_id_allocated;
-		std::map<unsigned short, FragmentedMessage> fragmented_messages_received;
+		std::map<ushort, FragmentedMessage> fragmented_messages_received;
 		std::mutex fragmented_messages_received_mutex;
 
 		void FragmentedSend(Bytes data);
-		FragmentedMessage GetFragmentedMessage(unsigned short messageId);
+		FragmentedMessage GetFragmentedMessage(ushort messageId);
 		void FragmentedStartMessageReceive(Bytes buffer);
 		void FragmentedMessageReceive(Bytes buffer);
 		void FinalizeFragmentedMessage(FragmentedMessage &message);
 
 		//Reliable
-		std::map<unsigned short, Packet> reliable_data_packets_sent;
+		std::map<ushort, Packet> reliable_data_packets_sent;
 		std::mutex reliable_data_packets_sent_mutex;
 
 		std::atomic_int resend_timeout = 0;
 		std::atomic_ushort last_id_allocated;
 
-		std::vector<unsigned short> reliable_data_packets_missing; // can i replace C#'s HashSet with std::vector?
+		std::vector<ushort> reliable_data_packets_missing; // can i replace C#'s HashSet with std::vector?
 		std::mutex reliable_data_packets_missing_mutex;
 
 		std::atomic_ushort reliable_receive_last;

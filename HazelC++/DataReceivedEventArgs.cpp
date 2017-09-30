@@ -4,7 +4,7 @@ namespace Hazel
 {
 	DataReceivedEventArgs::DataReceivedEventArgs()
 	{
-		ObjectPool.AssignObjectFactory(CreateObject);
+		object_pool.AssignObjectFactory(CreateObject);
 	}
 
 	DataReceivedEventArgs::DataReceivedEventArgs(const DataReceivedEventArgs &other)
@@ -16,7 +16,7 @@ namespace Hazel
 	DataReceivedEventArgs::~DataReceivedEventArgs()
 	{
 		send_option = SendOption::None;
-		ObjectPool.PutObject(*this);
+		object_pool.PutObject(*this);
 	}
 
 	DataReceivedEventArgs DataReceivedEventArgs::CreateObject()
@@ -42,6 +42,6 @@ namespace Hazel
 
 	DataReceivedEventArgs &DataReceivedEventArgs::GetObject()
 	{
-		return ObjectPool.GetObject();
+		return object_pool.GetObject();
 	}
 }

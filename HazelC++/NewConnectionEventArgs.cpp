@@ -9,12 +9,12 @@ namespace Hazel
 
 	NewConnectionEventArgs::NewConnectionEventArgs()
 	{
-		ObjectPool.AssignObjectFactory(CreateObject);
+		object_pool.AssignObjectFactory(CreateObject);
 	}
 
 	NewConnectionEventArgs::~NewConnectionEventArgs()
 	{
-		ObjectPool.PutObject(*this);
+		object_pool.PutObject(*this);
 	}
 
 	Bytes NewConnectionEventArgs::GetHandshakeData()
@@ -29,7 +29,7 @@ namespace Hazel
 
 	NewConnectionEventArgs & NewConnectionEventArgs::GetObject()
 	{
-		return ObjectPool.GetObject();
+		return object_pool.GetObject();
 	}
 
 	void NewConnectionEventArgs::Set(Bytes handshake_data, NetworkConnection *connection)

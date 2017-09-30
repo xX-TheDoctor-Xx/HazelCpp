@@ -27,26 +27,28 @@ namespace Hazel
 		State = state;
 		
 		if (state == ConnectionState::Connected)
-			connectionWaitLock.Notify();
+			connection_wait_lock.Set();
+		else
+			connection_wait_lock.Reset();
 	}
 
 	void Connection::InvokeDataReceived(Bytes bytes, SendOption sendOption)
 	{
-		DataReceivedEventArgs args;
+		DataReceivedEventArgs args = DataReceivedEventArgs::GetObject();
 		args.Set(bytes, sendOption);
 		DataReceived.Call(args);
 	}
 
 	void Connection::InvokeDisconnected(const HazelException &e)
 	{
-		DisconnectedEventArgs args;
+		DisconnectedEventArgs args = DisconnectedEventArgs::GetObject();
 		args.Set(e);
 		Disconnected.Call(args);
 	}
 
 	bool Connection::WaitOnConnect(int timeout)
 	{
-		return connectionWaitLock.Wait(timeout);
+		return connection_wait_lock.Wait(timeout);
 	}
 
 	void Connection::SetEndPoint(NetworkEndPoint end_point)

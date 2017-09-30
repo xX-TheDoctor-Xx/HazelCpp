@@ -13,10 +13,10 @@ namespace Hazel
 		Bytes bytes;
 		SendOption send_option;
 
-	public:
-		static ObjectPool<DataReceivedEventArgs> ObjectPool;
+		static ObjectPool<DataReceivedEventArgs> object_pool;
 		static DataReceivedEventArgs CreateObject();
 
+	public:
 		DataReceivedEventArgs();
 		DataReceivedEventArgs(const DataReceivedEventArgs &other);
 
@@ -24,7 +24,7 @@ namespace Hazel
 
 		Bytes GetBytes();
 		SendOption GetSendOption();
-		DataReceivedEventArgs &GetObject(); // reference to the object taken from the pool
+		static DataReceivedEventArgs &GetObject(); // reference to the object taken from the pool
 
 		void Set(Bytes bytes, SendOption send_option);
 	};

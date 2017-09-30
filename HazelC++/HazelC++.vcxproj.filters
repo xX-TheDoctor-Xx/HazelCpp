@@ -51,9 +51,6 @@
     <ClInclude Include="ConnectionStatistics.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AutoResetEvent.hpp">
-      <Filter>Header Files\Util</Filter>
-    </ClInclude>
     <ClInclude Include="ConnectionListener.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -123,6 +120,9 @@
     <ClInclude Include="Bytes.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ManualResetEvent.hpp">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Connection.cpp">
@@ -136,9 +136,6 @@
     </ClCompile>
     <ClCompile Include="ConnectionStatistics.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AutoResetEvent.cpp">
-      <Filter>Source Files\Util</Filter>
     </ClCompile>
     <ClCompile Include="ConnectionListener.cpp">
       <Filter>Source Files</Filter>
@@ -205,6 +202,9 @@
     </ClCompile>
     <ClCompile Include="Bytes.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ManualResetEvent.cpp">
+      <Filter>Source Files\Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

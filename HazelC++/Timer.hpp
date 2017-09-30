@@ -19,19 +19,19 @@ namespace Hazel
 		unsigned long interval;
 		bool stop;
 
-		static void ActualTimer(Timer *timer);
+		static void ActualTimer(Timer *timer, ...);
 
 	public:
 		GenericFunction<void, Args...> callback;
-		std::vector<void*> params;
 
 		Timer();
 
 		/* Set the interval in milliseconds */
 		void SetCallback(GenericFunction<void, Args...> &callback);
 		void SetInterval(unsigned long msInterval);
-		void Start();
+		void Start(...);
 		bool IsRunning();
 		void Stop();
+		void Reset();
 	};
 }

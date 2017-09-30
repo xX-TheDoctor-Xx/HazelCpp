@@ -119,7 +119,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AutoResetEvent.hpp" />
+    <ClInclude Include="ManualResetEvent.hpp" />
     <ClInclude Include="Bytes.hpp" />
     <ClInclude Include="Connection.hpp" />
     <ClInclude Include="ConnectionEndPoint.hpp" />
@@ -151,7 +151,7 @@
     <ClInclude Include="UdpServerConnection.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AutoResetEvent.cpp" />
+    <ClCompile Include="ManualResetEvent.cpp" />
     <ClCompile Include="Bytes.cpp" />
     <ClCompile Include="Connection.cpp" />
     <ClCompile Include="ConnectionListener.cpp" />

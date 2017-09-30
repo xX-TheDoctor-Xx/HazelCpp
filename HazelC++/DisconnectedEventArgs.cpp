@@ -4,13 +4,13 @@ namespace Hazel
 {
 	DisconnectedEventArgs::DisconnectedEventArgs()
 	{
-		ObjectPool.AssignObjectFactory(CreateObject);
+		object_pool.AssignObjectFactory(CreateObject);
 	}
 
 	DisconnectedEventArgs::~DisconnectedEventArgs()
 	{
 		exception = HazelException();
-		ObjectPool.PutObject(*this);
+		object_pool.PutObject(*this);
 	}
 
 	void DisconnectedEventArgs::Set(const HazelException &ex)
@@ -25,7 +25,7 @@ namespace Hazel
 
 	DisconnectedEventArgs & DisconnectedEventArgs::GetObject()
 	{
-		return ObjectPool.GetObject();
+		return object_pool.GetObject();
 	}
 
 	HazelException DisconnectedEventArgs::GetException()

@@ -22,5 +22,7 @@ namespace Hazel
 		Bytes &operator=(const Bytes &other);
 
 		bool IsValid();
+
+		void Clear();
 	};
 }

@@ -13,7 +13,7 @@ namespace Hazel
 
 	public:
 		NetworkEndPoint();
-		NetworkEndPoint(const std::string &ip, unsigned short port);
+		NetworkEndPoint(const std::string &ip, ushort port);
 
 		void SetIP(const std::string &ip);
 		void SetPort(unsigned int port);

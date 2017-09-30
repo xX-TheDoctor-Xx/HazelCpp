@@ -10,16 +10,18 @@ namespace Hazel
 	{
 		Bytes handshake_data;
 		NetworkConnection *connection;
-	public:
-		static ObjectPool<NewConnectionEventArgs> ObjectPool;
+
+		static ObjectPool<NewConnectionEventArgs> object_pool;
 		static NewConnectionEventArgs CreateObject();
+
+	public:
 
 		NewConnectionEventArgs();
 		~NewConnectionEventArgs();
 
 		Bytes GetHandshakeData();
 		NetworkConnection *GetConnection();
-		NewConnectionEventArgs &GetObject();
+		static NewConnectionEventArgs &GetObject();
 
 		void Set(Bytes handshake_data, NetworkConnection *connection);
 	};
