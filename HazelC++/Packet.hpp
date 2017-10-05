@@ -26,10 +26,10 @@ namespace Hazel
 
 		UdpConnection *con;
 
-	public:
-		Timer<UdpConnection*, Packet&> Timer;
-		std::mutex TimerMutex;
+		Timer<UdpConnection*, Packet&> timer;
+		std::mutex timer_mutex;
 
+	public:
 		Packet();
 		Packet(const Packet &packet);
 
@@ -47,6 +47,11 @@ namespace Hazel
 		void InvokeAckCallback();
 		void StopwatchStop();
 		long long GetRoundTime();
+
+		void Recycle();
+
+		Timer<UdpConnection*, Packet&> &GetTimer();
+		std::mutex &GetTimerMutex();
 
 		static Packet &GetObject();
 	};

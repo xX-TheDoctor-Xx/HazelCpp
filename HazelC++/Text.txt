@@ -10,6 +10,4 @@ Cant get ManualResetEvent right mhhhhhhhhhhh
 
 check udpconnection::packet_resend_action
 
-check udpconnection::AcknowledgementMessageReceive
-
 implement error codes?

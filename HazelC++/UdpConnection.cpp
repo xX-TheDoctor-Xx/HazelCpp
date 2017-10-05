@@ -230,16 +230,17 @@ namespace Hazel
 
 			if (!nonconst_packet.GetAcknowledged())
 			{
-				nonconst_packet.Timer.Stop();
+				nonconst_packet.GetTimer().Stop();
 				nonconst_packet.IncrementLastTimeout(nonconst_packet.GetLastTimeout() * 2);
-				nonconst_packet.Timer.SetInterval(nonconst_packet.GetLastTimeout());
-				nonconst_packet.Timer.Start(conn, nonconst_packet);
+				nonconst_packet.GetTimer().SetInterval(nonconst_packet.GetLastTimeout());
+				nonconst_packet.GetTimer().Start(conn, nonconst_packet);
 				nonconst_packet.IncrementRetransmissions(1); // does it get incremented in Hazel C#?
 				if (nonconst_packet.GetRetransmissions() > conn->GetResendsBeforeDisconnect())
 				{
 					conn->HandleDisconnect();
 					nonconst_packet.SetAcknowledged(true);
-					//recycle?
+					nonconst_packet.Recycle();
+
 					return;
 				}
 
@@ -254,7 +255,7 @@ namespace Hazel
 			}
 		};
 
-		lock(packet.TimerMutex, fn)
+		lock(packet.GetTimerMutex(), fn)
 	}
 
 	void UdpConnection::AttachReliableID(Bytes buffer, int offset, GenericFunction<void> &ack_callback)
@@ -360,7 +361,7 @@ namespace Hazel
 				total_round_time += packet.GetRoundTime();
 				total_reliable_messages++;
 
-				//packet recycle?
+				packet.Recycle();
 
 				reliable_data_packets_sent.erase(id);
 			}

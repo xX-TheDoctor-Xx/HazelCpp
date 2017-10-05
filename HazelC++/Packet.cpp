@@ -25,22 +25,16 @@ namespace Hazel
 
 	Packet::~Packet()
 	{
-		data.Clear();
-		ack_callback.Set(std::function<void()>());
-		last_timeout = 0;
-		acknowledged = false;
-		retransmissions = 0;
-		//stopwatch is auto reseted when start is called
-		object_pool.PutObject(*this);
+		Recycle();
 	}
 
 	void Packet::Set(Bytes data, UdpConnection *con, GenericFunction<void, UdpConnection*, Packet&> &resend_action, int timeout, GenericFunction<void> &ack_callback)
 	{
 		this->data = data;
 
-		Timer.SetInterval(timeout); // i dont think this is right
-		Timer.callback = resend_action;
-		Timer.Start(con, *this);
+		timer.SetInterval(timeout); // i dont think this is right
+		timer.callback = resend_action;
+		timer.Start(con, *this);
 
 		last_timeout = timeout;
 		this->ack_callback = ack_callback;
@@ -96,6 +90,32 @@ namespace Hazel
 	long long Packet::GetRoundTime()
 	{
 		return stopwatch.GetElapsedMilliseconds();
+	}
+
+	void Packet::Recycle()
+	{
+		lock(timer_mutex, [this]()
+		{
+			timer.Stop();
+		});
+
+		data.Clear();
+		ack_callback.Set(std::function<void()>());
+		last_timeout = 0;
+		acknowledged = false;
+		retransmissions = 0;
+		//stopwatch is auto reseted when start is called
+		object_pool.PutObject(*this);
+	}
+
+	Timer<UdpConnection*, Packet&>& Packet::GetTimer()
+	{
+		return timer;
+	}
+
+	std::mutex & Packet::GetTimerMutex()
+	{
+		return timer_mutex;
 	}
 
 	Packet & Hazel::Packet::GetObject()
