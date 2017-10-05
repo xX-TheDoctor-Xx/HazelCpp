@@ -6,6 +6,5 @@ namespace Hazel
 {
 	class NetworkConnection : public Connection
 	{
-
 	};
 }

@@ -14,6 +14,7 @@ namespace Hazel
 		return true;
 	}
 
+
 	void Util::BlockCopy(void * source, unsigned int source_offset, void * destination, unsigned int destination_offset, unsigned int count)
 	{
 		char *src = (char*)source;
@@ -21,19 +22,23 @@ namespace Hazel
 		memcpy(dst + destination_offset, src + source_offset, count);
 	}
 
-	Lock::Lock(std::mutex & mutex) : mutex(mutex)
+	bool Util::FillAddr(const std::string & address, unsigned short port, sockaddr_in *addr)
 	{
-		mutex.lock();
+		std::memset(&addr, 0, sizeof(addr));
+		addr->sin_family = AF_INET; // can be ipv6 right?
+
+		hostent *host;
+		if (!(host = gethostbyname(address.c_str())))
+			return false;
+		addr->sin_addr.s_addr = inet_addr(host->h_addr_list[0]);
+		addr->sin_port = htons(port);
+
+		return true;
 	}
 
-	Lock::~Lock()
+	bool Util::FillAddr(const std::string & address, unsigned short port, sockaddr *addr)
 	{
-		mutex.unlock();
-	}
-
-	Lock::operator bool() const
-	{
-		return false;
+		return Util::FillAddr(address, port, (sockaddr_in*)addr);
 	}
 
 	bool HazelInit::Initialize()

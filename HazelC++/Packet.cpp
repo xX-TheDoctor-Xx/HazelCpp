@@ -25,11 +25,6 @@ namespace Hazel
 
 	Packet::~Packet()
 	{
-		lock(TimerMutex)
-		{
-			Timer.Reset();
-		}
-		
 		data.Clear();
 		ack_callback.Set(std::function<void()>());
 		last_timeout = 0;

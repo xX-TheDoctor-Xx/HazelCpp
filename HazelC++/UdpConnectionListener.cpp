@@ -11,10 +11,12 @@ namespace Hazel
 
 	void UdpConnectionListener::Start()
 	{
-		lock(listener_mutex)
+		auto fn = [this]()
 		{
 			// start the listener
-		}
+		};
+
+		lock(listener_mutex, fn)
 
 		StartListeningForData();
 	}
@@ -26,9 +28,11 @@ namespace Hazel
 
 	void UdpConnectionListener::RemoveConnectionTo(NetworkEndPoint end_point)
 	{
-		lock(connection_mutex)
+		auto fn = [this]()
 		{
-			//connections.erase(end_point);
-		}
+			//connections.erase(end_point);			
+		};
+
+		lock(connection_mutex, fn)
 	}
 }

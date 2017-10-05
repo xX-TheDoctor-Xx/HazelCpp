@@ -55,93 +55,74 @@
 #pragma once
 
 #include "Hazel.hpp"
-#include "HazelException.hpp"
-#include "Bytes.hpp"
-#include "NetworkEndPoint.hpp"
+#include "TcpClient.hpp"
+
+#include <deque>
 
 namespace Hazel
 {
-	class Socket
+	class TcpServer : public TcpSocket
 	{
+		unsigned max_clients_;
+		int max_listen_pending_;
+		bool TcpNoDelay;
+		bool TcpReuseAddress;
+
 	public:
-		Socket();
-		Socket(SOCKET id);
-		Socket(const NetworkEndPoint & adr);
-		Socket(SOCKET id, const NetworkEndPoint & adr);
-		Socket(const char* adr);
+		TcpServer() : TcpSocket(), max_clients_(64), max_listen_pending_(64), TcpNoDelay(true), TcpReuseAddress(true) { }
+		virtual ~TcpServer() { stop(); }
 
-		virtual ~Socket();
+		bool start()
+		{
+			return TcpSocket::listen(TcpSocket::ip(), TcpReuseAddress, TcpNoDelay, max_listen_pending_);
+		}
 
-		bool closed() const;
+		unsigned int max_clients() const throw()
+		{
+			return max_clients_;
+		}
 
-		SOCKET socket_id() const;
+		void max_clients(unsigned int n) throw()
+		{
+			max_clients_ = n;
+		}
 
-		const NetworkEndPoint & ip() const;
-		void ip(const NetworkEndPoint & adr);
-		void ip(const char* adr);
+		int max_clients_pending() const
+		{
+			return max_listen_pending_;
+		}
+		void max_clients_pending(int n)
+		{
+			max_listen_pending_ = n > 2 ? n : 2;
+		}
 
-		long error() const;
-		void error(long newerror);
-		const std::string & error_text() const;
-		void error_text(const char* text, bool overwrite = false);
+		void stop()
+		{
+			if (!TcpSocket::closed())
+			{
+				max_clients_ = 0;
+				TcpSocket::close();
+			}
+		}
 
-		unsigned timeout_ms() const;
-		void timeout_ms(unsigned newtimeout);
+		bool running() const
+		{
+			return !TcpSocket::closed();
+		}
 
-		int option(int level, int optname);
-		void option(int level, int optname, int newval);
-		int option_sendbuffer_size();
-		int option_recvbuffer_size();
-		bool option_error();
-
-		void nodelay(bool enabled);
-		bool nodelay();
-
-		void keepalive(bool enabled);
-		bool keepalive();
-
-		void reuseaddress(bool enabled);
-		bool reuseaddress();
-
-		void nonblocking(bool enabled);
-		bool nonblocking();
-
-		bool create(SocketType type = SocketType::Tcp, AddressFamily family = AddressFamily::Any);
-
-		bool connect();
-
-		bool bind();
-		bool listen(int max_listen_pending = 1);
-
-		bool accept(Socket & acc);
-
-		void close();
-
-		bool wait(bool *is_recv = nullptr, bool *is_sent = nullptr, int timeout_ms = 100);
-
-		long send(const std::string & text);
-		long send(const void* data, size_t datasize);
-
-		long recv(void* data, size_t datasize);
-		long recv(std::string & s);
-		long recvfrom(void* data, size_t datasize, NetworkEndPoint & ip);
-		long sendto(const void* data, size_t datasize, const NetworkEndPoint & ip);
-
-	protected:
-		long analyze_error(long fn_return) const;
-
-		bool listens();
-
-		static std::string syserr_text(long err);
+		TcpClient *accept()
+		{
+			if (TcpSocket::closed()) return nullptr;
+			TcpClient client;
+			if (TcpSocket::accept(client)) 
+			{
+				client.nodelay(true);
+				return &client;
+			}
+		}
 
 	private:
-		SOCKET id_;
-		NetworkEndPoint ip_;
-		long errno_;
-		std::string errtext_;
-		unsigned long timeout_;
-		bool checksent_;
-		bool listens_;
-		int max_listen_pending_;
+		bool connect(const NetworkEndPoint & ip_addr);
+		bool connect();
 	};
 }

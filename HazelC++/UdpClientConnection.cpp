@@ -2,22 +2,29 @@
 
 namespace Hazel
 {
-	UdpClientConnection::UdpClientConnection(NetworkEndPoint remote_end_point) : data_buffer(new byte[65535], 65535)
+	UdpClientConnection::UdpClientConnection(NetworkEndPoint remote_end_point) : data_buffer(new byte[65535], 65535), UdpSocket()
 	{
-		lock(socket_mutex)
+		auto fn = [this, remote_end_point]()
 		{
 			SetEndPoint(remote_end_point);
 
-			if ((soc_ptr = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) != INVALID_SOCKET)
+			if (remote_end_point.is_v4())
 			{
-				//throw whatever
+				Socket::create(SocketType::Udp, AddressFamily::IPv4);
 			}
-		}
+			else
+			{
+				Socket::create(SocketType::Udp, AddressFamily::IPv6);
+				//Socket::option(41, 27, false); // no idea
+			}
+		};
+
+		lock(socket_mutex, fn)
 	}
 
 	void UdpClientConnection::WriteBytesToConnection(Bytes bytes)
 	{
-		lock(socket_mutex)
+		auto fn = [this]()
 		{
 			if (GetState() != ConnectionState::Connected && GetState() != ConnectionState::Connecting)
 			{
@@ -25,12 +32,22 @@ namespace Hazel
 			}
 
 			//int sent = send()
-		}
+		};
+
+		lock(socket_mutex, fn)
+	}
+
+	void hello_func()
+	{
+		/*lock(socket_mutex)
+		{
+			SetState(ConnectionState::Connected);
+		}*/
 	}
 
 	void UdpClientConnection::Connect(Bytes bytes, int timeout)
 	{
-		lock(socket_mutex)
+		auto fn = [this, bytes, timeout]()
 		{
 			if (GetState() != ConnectionState::NotConnected)
 			{
@@ -39,23 +56,29 @@ namespace Hazel
 
 			SetState(ConnectionState::Connecting);
 
-
+			try
+			{
+				UdpSocket::bind(std::string("0.0.0.0") + '0');
+			}
+			catch (HazelException&)
+			{
+				SetState(ConnectionState::NotConnected);
+				//throw new HazelException("A socket exception occured while binding to the port.", e);
+			}
 
 			try
 			{
 				StartListeningForData();
 			}
-			catch (std::exception&)
+			catch (HazelException&)
 			{
-
+				SetState(ConnectionState::NotConnected);
+				//throw new HazelException("A Socket exception occured while initiating a receive operation.", e);
 			}
 
-			auto func = []()
-			{
-				// set connection state to connected
-			};
-
-			//SendHello(bytes, GenericFunction<void>(func));
+			GenericFunction<void> func;
+			func.Set(hello_func);
+			SendHello(bytes, func);
 
 			bool timed_out = !WaitOnConnect(timeout);
 
@@ -63,14 +86,54 @@ namespace Hazel
 			{
 				// throw new HazelException("Connection attempt timed out.");
 			}
+		};
+
+		lock(socket_mutex, fn)
+	}
+
+	void UdpClientConnection::HandleDisconnect(HazelException &e)
+	{
+		bool invoke = false;
+
+		auto fn = [this, invoke]()
+		{
+			if (GetState() == ConnectionState::Connected)
+			{
+				SetState(ConnectionState::Disconnecting);
+				const_cast<bool&>(invoke) = true;
+			}
+		};
+
+		lock(socket_mutex, fn)
+
+		if (invoke)
+		{
+			InvokeDisconnected(e);
+			Close();
 		}
+	}
+
+	void UdpClientConnection::Close()
+	{
+		if (GetState() == ConnectionState::Connected)
+			SendDisconnect();
+
+		auto fn = [this]()
+		{
+			SetState(ConnectionState::NotConnected);
+			UdpSocket::close();
+		};
+
+		lock(socket_mutex, fn)
 	}
 
 	void UdpClientConnection::StartListeningForData()
 	{
-		lock(socket_mutex)
+		auto fn = [this]()
 		{
 			//socket.BeginReceive(dataBuffer, 0, dataBuffer.Length, SocketFlags.None, ReadCallback, dataBuffer);
-		}
+		};
+
+		lock(socket_mutex, fn)
 	}
 }

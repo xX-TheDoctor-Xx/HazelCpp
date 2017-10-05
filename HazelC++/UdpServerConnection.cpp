@@ -18,7 +18,7 @@ namespace Hazel
 
 	void UdpServerConnection::WriteBytesToConnection(Bytes bytes)
 	{
-		lock(state_mutex)
+		auto fn = [this]()
 		{
 			if (GetState() != ConnectionState::Connected)
 			{
@@ -26,7 +26,9 @@ namespace Hazel
 			}
 
 			//listener->SendData(bytes, GetEndpoint());
-		}
+		};
+
+		lock(state_mutex, fn)
 	}
 
 	void UdpServerConnection::Connect(Bytes bytes, int timeout)
@@ -36,11 +38,13 @@ namespace Hazel
 
 	void UdpServerConnection::HandleDisconnect(HazelException & e)
 	{
-		lock(state_mutex)
+		auto fn = [this]()
 		{
 			if (GetState() == ConnectionState::Connected)
 				SetState(ConnectionState::Disconnecting);
-		}
+		};
+
+		lock(state_mutex, fn)
 
 		if (e.ShouldHandle())
 			InvokeDisconnected(e);
@@ -51,10 +55,12 @@ namespace Hazel
 		if (GetState() == ConnectionState::Connected)
 			SendDisconnect();
 
-		lock(state_mutex)
+		auto fn = [this]()
 		{
 			//listener->RemoveConnectionTo(GetEndpoint());
 			SetState(ConnectionState::NotConnected);
-		}
+		};
+
+		lock(state_mutex, fn)
 	}
 }

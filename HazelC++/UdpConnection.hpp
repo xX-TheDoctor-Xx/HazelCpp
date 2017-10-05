@@ -35,7 +35,7 @@ namespace Hazel
 		std::mutex fragmented_messages_received_mutex;
 
 		void FragmentedSend(Bytes data);
-		FragmentedMessage GetFragmentedMessage(ushort messageId);
+		FragmentedMessage GetFragmentedMessage(ushort message_id);
 		void FragmentedStartMessageReceive(Bytes buffer);
 		void FragmentedMessageReceive(Bytes buffer);
 		void FinalizeFragmentedMessage(FragmentedMessage &message);

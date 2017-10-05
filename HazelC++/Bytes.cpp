@@ -1,4 +1,5 @@
 #include "Bytes.hpp"
+#include "HazelException.hpp"
 
 namespace Hazel
 {
@@ -28,9 +29,7 @@ namespace Hazel
 	byte & Bytes::operator[](int index)
 	{
 		if (index > GetLength())
-		{
-			//do something
-		}
+			throw HazelException("Index out of range");
 
 		return GetBytes()[index];
 	}

@@ -1,28 +1,17 @@
 #pragma once
 
-#include <exception>
+#include <stdexcept>
 
 namespace Hazel
 {
-	class HazelException : public std::exception
+	class HazelException : public std::runtime_error
 	{
 	public:
-		HazelException() : handle(false)
-		{
-		}
+		HazelException();
+		HazelException(const char *msg);
+		HazelException(std::exception &ex);
 
-		HazelException(const char *msg) : std::exception(msg), handle(true)
-		{
-		}
-
-		HazelException(std::exception &ex) : std::exception(ex), handle(true)
-		{
-		}
-
-		bool ShouldHandle()
-		{
-			return handle;
-		}
+		bool ShouldHandle();
 
 	private:
 		bool handle;

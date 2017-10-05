@@ -2,22 +2,9 @@
 
 namespace Hazel
 {
-	TcpConnection::TcpConnection(Poco::Net::StreamSocket &soc)
-	{
-		//check if soc is Tcp which it should be
-
-		lock(socket_mutex)
-		{
-			this->soc = &soc;
-			this->soc->setNoDelay(true);
-
-			SetState(ConnectionState::Connected);
-		}
-	}
-
 	TcpConnection::TcpConnection(NetworkEndPoint end_point)
 	{
-		lock(socket_mutex)
+		auto fn = [this, end_point]()
 		{
 			if (GetState() != ConnectionState::NotConnected)
 			{
@@ -26,10 +13,9 @@ namespace Hazel
 
 			SetEndPoint(end_point);
 
-			this->soc = new Poco::Net::StreamSocket();
-			this->soc->setNoDelay(true);
-
 			SetState(ConnectionState::Connected);
-		}
+		};
+
+		lock(socket_mutex, fn)
 	}
 }

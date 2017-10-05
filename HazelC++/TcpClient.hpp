@@ -55,93 +55,29 @@
 #pragma once
 
 #include "Hazel.hpp"
-#include "HazelException.hpp"
-#include "Bytes.hpp"
-#include "NetworkEndPoint.hpp"
+#include "TcpSocket.hpp"
 
 namespace Hazel
 {
-	class Socket
+	class TcpClient : public TcpSocket
 	{
 	public:
-		Socket();
-		Socket(SOCKET id);
-		Socket(const NetworkEndPoint & adr);
-		Socket(SOCKET id, const NetworkEndPoint & adr);
-		Socket(const char* adr);
-
-		virtual ~Socket();
-
-		bool closed() const;
-
-		SOCKET socket_id() const;
-
-		const NetworkEndPoint & ip() const;
-		void ip(const NetworkEndPoint & adr);
-		void ip(const char* adr);
-
-		long error() const;
-		void error(long newerror);
-		const std::string & error_text() const;
-		void error_text(const char* text, bool overwrite = false);
-
-		unsigned timeout_ms() const;
-		void timeout_ms(unsigned newtimeout);
-
-		int option(int level, int optname);
-		void option(int level, int optname, int newval);
-		int option_sendbuffer_size();
-		int option_recvbuffer_size();
-		bool option_error();
-
-		void nodelay(bool enabled);
-		bool nodelay();
-
-		void keepalive(bool enabled);
-		bool keepalive();
-
-		void reuseaddress(bool enabled);
-		bool reuseaddress();
-
-		void nonblocking(bool enabled);
-		bool nonblocking();
-
-		bool create(SocketType type = SocketType::Tcp, AddressFamily family = AddressFamily::Any);
-
-		bool connect();
-
-		bool bind();
-		bool listen(int max_listen_pending = 1);
-
-		bool accept(Socket & acc);
-
-		void close();
-
-		bool wait(bool *is_recv = nullptr, bool *is_sent = nullptr, int timeout_ms = 100);
-
-		long send(const std::string & text);
-		long send(const void* data, size_t datasize);
-
-		long recv(void* data, size_t datasize);
-		long recv(std::string & s);
-		long recvfrom(void* data, size_t datasize, NetworkEndPoint & ip);
-		long sendto(const void* data, size_t datasize, const NetworkEndPoint & ip);
-
-	protected:
-		long analyze_error(long fn_return) const;
-
-		bool listens();
-
-		static std::string syserr_text(long err);
-
+		// Public forwards
+		TcpClient();
+		virtual ~TcpClient();
+		void disconnect();
+		bool connect(const char* ip);
+		bool connect(const NetworkEndPoint & ip);
+		bool connected();
+		bool closed();
+		long error();
+		std::string error_text();
 	private:
-		SOCKET id_;
-		NetworkEndPoint ip_;
-		long errno_;
-		std::string errtext_;
-		unsigned long timeout_;
-		bool checksent_;
-		bool listens_;
-		int max_listen_pending_;
+		// Private blockers
+		bool listen(const NetworkEndPoint & ip_addr);
+		bool listen();
+		bool accept(TcpSocket & acc);
+		bool create(SocketType type = SocketType::Tcp);
+		bool bind();
 	};
 }

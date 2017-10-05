@@ -29,5 +29,7 @@ namespace Hazel
 			cv.wait_for(lock, std::chrono::milliseconds(timeout));
 			stopwatch.Stop(); // resets end_point each time it executes
 		}
+
+		return true;
 	}
 }

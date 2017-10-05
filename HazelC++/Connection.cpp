@@ -7,7 +7,7 @@ namespace Hazel
 		return end_point;
 	}
 
-	ConnectionStatistics Connection::GetStatistics()
+	ConnectionStatistics &Connection::GetStatistics()
 	{
 		return Statistics;
 	}

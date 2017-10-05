@@ -3,14 +3,16 @@
 #include "UdpConnection.hpp"
 #include "NetworkEndPoint.hpp"
 #include "Bytes.hpp"
+#include "UdpSocket.hpp"
 
 namespace Hazel
 {
-	class UdpClientConnection : public UdpConnection
+	class UdpClientConnection : public UdpConnection, public UdpSocket
 	{
-		SOCKET soc_ptr;
+	public:
 		std::mutex socket_mutex;
 
+	private:
 		Bytes data_buffer;
 
 		void StartListeningForData();
@@ -21,5 +23,7 @@ namespace Hazel
 
 	protected:
 		void WriteBytesToConnection(Bytes bytes) override;
+		void HandleDisconnect(HazelException &e) override;
+		void Close();
 	};
 }

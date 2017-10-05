@@ -24,36 +24,42 @@ namespace Hazel
 
 	void KeepAliveTimerCallback(UdpConnection *con)
 	{
-		con->SendHello(Bytes(nullptr, -1), Hazel::GenericFunction<void>());
+		con->SendHello(Bytes(nullptr, -1), GenericFunction<void>());
 	}
 
 	void UdpConnection::InitializeKeepAliveTimer()
 	{
-		lock(keep_alive_timer_mutex)
+		auto fn = [this]()
 		{
 			keep_alive_timer.SetInterval(keep_alive_interval);
 			keep_alive_timer.callback.Set(KeepAliveTimerCallback);
 			keep_alive_timer.Start(this);
-		}
+		};
+
+		lock(keep_alive_timer_mutex, fn)
 	}
 
 	void UdpConnection::ResetKeepAliveTimer()
 	{
-		lock(keep_alive_timer_mutex)
+		auto fn = [this]()
 		{
 			keep_alive_timer.Stop();
 			keep_alive_timer.Start(this);
-		}
+		};
+
+		lock(keep_alive_timer_mutex, fn)
 	}
 
 	void UdpConnection::StopKeepAliveTimer()
 	{
-		lock(keep_alive_timer_mutex)
+		auto fn = [this]()
 		{
 			if (!keep_alive_timer_stopped)
 				keep_alive_timer.Stop();
 			keep_alive_timer_stopped = true;
-		}
+		};
+
+		lock(keep_alive_timer_mutex, fn)
 	}
 
 	//Fragmented
@@ -69,7 +75,7 @@ namespace Hazel
 
 		for (ushort i = 0; i < ceil(data.GetLength() / GetFragmentSize()); i++)
 		{
-			int buffer_size = std::min(data.GetLength() - (GetFragmentSize() * i), GetFragmentSize()) + 7;
+			int buffer_size = min(data.GetLength() - (GetFragmentSize() * i), GetFragmentSize()) + 7;
 			Bytes buffer(new byte[buffer_size](), buffer_size);
 
 			buffer[0] = i == 0 ? (byte)SendOption::FragmentedReliable : (byte)UdpSendOption::Fragment;
@@ -99,17 +105,20 @@ namespace Hazel
 		}
 	}
 
-	FragmentedMessage UdpConnection::GetFragmentedMessage(ushort messageId)
+	FragmentedMessage UdpConnection::GetFragmentedMessage(ushort message_id)
 	{
-		lock(fragmented_messages_received_mutex)
+		FragmentedMessage message;
+		auto fn = [this, message, message_id]()
 		{
-			FragmentedMessage message;
-			if (fragmented_messages_received.find(messageId) != fragmented_messages_received.end())
-				message = fragmented_messages_received.at(messageId);
+			if (fragmented_messages_received.find(message_id) != fragmented_messages_received.end())
+				const_cast<FragmentedMessage&>(message) = fragmented_messages_received.at(message_id);
 			else
-				fragmented_messages_received.insert(std::make_pair(messageId, message));
-			return message;
-		}
+				fragmented_messages_received.insert(std::make_pair(message_id, message));
+		};
+
+		lock(fragmented_messages_received_mutex, fn)
+
+		return message;
 	}
 
 	void UdpConnection::FragmentedStartMessageReceive(Bytes buffer)
@@ -123,14 +132,17 @@ namespace Hazel
 		FragmentedMessage message;
 		bool message_complete;
 
-		lock(fragmented_messages_received_mutex)
+		auto fn = [this, message, id, buffer, length, message_complete]()
 		{
-			message = GetFragmentedMessage(id);
-			message.received.emplace_back(Fragment(0, buffer, 7));
-			message.no_fragments = length;
+			FragmentedMessage &nonconst_message = const_cast<FragmentedMessage&>(message);
+			nonconst_message = GetFragmentedMessage(id);
+			nonconst_message.received.emplace_back(Fragment(0, buffer, 7));
+			nonconst_message.no_fragments = length;
 
-			message_complete = message.no_fragments == message.received.size();
-		}
+			const_cast<bool&>(message_complete) = message.no_fragments == message.received.size();
+		};
+
+		lock(fragmented_messages_received_mutex, fn)
 
 		if (message_complete)
 			FinalizeFragmentedMessage(message);
@@ -147,13 +159,16 @@ namespace Hazel
 		FragmentedMessage message;
 		bool message_complete;
 
-		lock(fragmented_messages_received_mutex);
+		auto fn = [this, message, id, fragment_id, buffer, message_complete]()
 		{
-			message = GetFragmentedMessage(id);
-			message.received.emplace_back(Fragment(fragment_id, buffer, 7));
+			FragmentedMessage &nonconst_message = const_cast<FragmentedMessage&>(message);
+			nonconst_message = GetFragmentedMessage(id);
+			nonconst_message.received.emplace_back(Fragment(fragment_id, buffer, 7));
 
-			message_complete = message.no_fragments == message.received.size();
-		}
+			const_cast<bool&>(message_complete) = message.no_fragments == message.received.size();
+		};
+
+		lock(fragmented_messages_received_mutex, fn)
 
 		if (message_complete)
 			FinalizeFragmentedMessage(message);
@@ -169,7 +184,7 @@ namespace Hazel
 		}); // untested
 
 		int complete_data_size = (ordered_fragments.size() - 1) * GetFragmentSize() + ordered_fragments.at(ordered_fragments.size() - 1).Data.GetLength();
-		Bytes complete_data(new byte[complete_data_size](), complete_data_size); // same problem with sizeof
+		Bytes complete_data(new byte[complete_data_size](), complete_data_size);
 		int ptr = 0;
 		for (Fragment &fragment : ordered_fragments)
 		{
@@ -209,39 +224,45 @@ namespace Hazel
 
 	void packet_resend_action(UdpConnection *conn, Packet &packet)
 	{
-		lock(packet.TimerMutex)
+		auto fn = [conn, packet]()
 		{
-			if (!packet.GetAcknowledged())
+			Packet &nonconst_packet = const_cast<Packet&>(packet);
+
+			if (!nonconst_packet.GetAcknowledged())
 			{
-				packet.Timer.Stop();
-				packet.IncrementLastTimeout(packet.GetLastTimeout() * 2);
-				packet.Timer.SetInterval(packet.GetLastTimeout());
-				packet.Timer.Start(conn, packet);
-				packet.IncrementRetransmissions(1); // does it get incremented in Hazel C#?
-				if (packet.GetRetransmissions() > conn->GetResendsBeforeDisconnect())
+				nonconst_packet.Timer.Stop();
+				nonconst_packet.IncrementLastTimeout(nonconst_packet.GetLastTimeout() * 2);
+				nonconst_packet.Timer.SetInterval(nonconst_packet.GetLastTimeout());
+				nonconst_packet.Timer.Start(conn, nonconst_packet);
+				nonconst_packet.IncrementRetransmissions(1); // does it get incremented in Hazel C#?
+				if (nonconst_packet.GetRetransmissions() > conn->GetResendsBeforeDisconnect())
 				{
 					conn->HandleDisconnect();
-					packet.SetAcknowledged(true);
+					nonconst_packet.SetAcknowledged(true);
 					//recycle?
 					return;
 				}
 
 				try
 				{
-					conn->WriteBytesToConnection(packet.GetData());
+					conn->WriteBytesToConnection(nonconst_packet.GetData());
 				}
 				catch (HazelException&)
 				{
 					conn->HandleDisconnect();
 				}
 			}
-		}
+		};
+
+		lock(packet.TimerMutex, fn)
 	}
 
 	void UdpConnection::AttachReliableID(Bytes buffer, int offset, GenericFunction<void> &ack_callback)
 	{
-		lock(reliable_data_packets_sent_mutex)
+		auto fn = [this, buffer, offset, ack_callback]()
 		{
+			Bytes &nonconst_bytes = const_cast<Bytes&>(buffer);
+
 			ushort id;
 
 			do
@@ -249,17 +270,19 @@ namespace Hazel
 			while (reliable_data_packets_sent.find(id) != reliable_data_packets_sent.end());
 
 			//bid endian or litle? do i need that?
-			buffer[offset] = (byte)((id >> 8) & 0xFF);
-			buffer[offset + 1] = (byte)id;
+			nonconst_bytes[offset] = (byte)((id >> 8) & 0xFF);
+			nonconst_bytes[offset + 1] = (byte)id;
 
 			Packet packet = Packet::GetObject();
 			GenericFunction<void, UdpConnection*, Packet&> func;
 			func.Set(packet_resend_action);
 
-			packet.Set(buffer, this, func, resend_timeout.load() > 0 ? resend_timeout.load() : (GetAveragePing() != 0 ? GetAveragePing() * 4 : 200), ack_callback);
+			packet.Set(buffer, this, func, resend_timeout.load() > 0 ? resend_timeout.load() : (GetAveragePing() != 0 ? GetAveragePing() * 4 : 200), const_cast<Hazel::GenericFunction<void>&>(ack_callback));
 
 			reliable_data_packets_sent.insert(std::make_pair(id, packet));
-		}
+		};
+
+		lock(reliable_data_packets_sent_mutex, fn)
 	}
 
 	void UdpConnection::ReliableSend(byte send_option, Bytes data, GenericFunction<void> &ack_callback)
@@ -275,7 +298,7 @@ namespace Hazel
 
 		WriteBytesToConnection(bytes);
 
-		Statistics.LogReliableSend(data.GetLength(), bytes.GetLength());
+		GetStatistics().LogReliableSend(data.GetLength(), bytes.GetLength());
 	}
 
 	void UdpConnection::ReliableMessageReceive(Bytes buffer)
@@ -283,7 +306,7 @@ namespace Hazel
 		if (ProcessReliableReceive(buffer, 1))
 			InvokeDataReceived(SendOption::Reliable, buffer, 3);
 
-		Statistics.LogReliableReceive(buffer.GetLength() - 3, buffer.GetLength());
+		GetStatistics().LogReliableReceive(buffer.GetLength() - 3, buffer.GetLength());
 	}
 
 	bool UdpConnection::ProcessReliableReceive(Bytes bytes, int offset)
@@ -292,7 +315,7 @@ namespace Hazel
 
 		SendAck(bytes[offset], bytes[offset + 1]);
 
-		lock(reliable_data_packets_missing_mutex)
+		auto fn = [this, id]()
 		{
 			ushort overwrite_pointer = (ushort)(reliable_receive_last.load() - 32768);
 
@@ -313,7 +336,9 @@ namespace Hazel
 					reliable_data_packets_missing.erase(std::remove(reliable_data_packets_missing.begin(), reliable_data_packets_missing.end(), id), reliable_data_packets_missing.end());
 				else return true;
 			}
-		}
+		};
+
+		lock(reliable_data_packets_missing_mutex, fn)
 
 		return true;
 	}
@@ -322,7 +347,7 @@ namespace Hazel
 	{
 		ushort id = (ushort)((bytes[1] << 8) + bytes[2]);
 
-		lock(reliable_data_packets_sent_mutex)
+		auto fn = [this, id]()
 		{
 			if (reliable_data_packets_sent.find(id) != reliable_data_packets_sent.end())
 			{
@@ -339,9 +364,11 @@ namespace Hazel
 
 				reliable_data_packets_sent.erase(id);
 			}
-		}
+		};
 
-		Statistics.LogReliableReceive(0, bytes.GetLength());
+		lock(reliable_data_packets_sent_mutex, fn)
+
+		GetStatistics().LogReliableReceive(0, bytes.GetLength());
 	}
 
 	void UdpConnection::SendAck(byte byte1, byte byte2)
@@ -355,10 +382,9 @@ namespace Hazel
 
 	void UdpConnection::SendBytes(Bytes bytes, SendOption send_option)
 	{
-		if (State != ConnectionState::Connected)
-		{
-			// throw new InvalidOperationException("Could not send data as this Connection is not connected. Did you disconnect?");
-		}
+		// throw new InvalidOperationException("Could not send data as this Connection is not connected. Did you disconnect?");
+		if (GetState() != ConnectionState::Connected)
+			throw HazelException("Could not send data as this Connection is not connected. Did you disconnect?");
 
 		HandleSend(bytes, (byte)send_option);
 	}
@@ -411,7 +437,7 @@ namespace Hazel
 			case (byte)UdpSendOption::Hello:
 			{
 				ProcessReliableReceive(buffer, 1);
-				Statistics.LogHelloReceive(buffer.GetLength());
+				GetStatistics().LogHelloReceive(buffer.GetLength());
 				break;
 			}
 			case (byte)UdpSendOption::Disconnect:
@@ -432,7 +458,7 @@ namespace Hazel
 			default:
 			{
 				InvokeDataReceived(SendOption::None, buffer, 1);
-				Statistics.LogUnreliableReceive(buffer.GetLength() - 1, buffer.GetLength());
+				GetStatistics().LogUnreliableReceive(buffer.GetLength() - 1, buffer.GetLength());
 				break;
 			}
 		}
@@ -449,7 +475,7 @@ namespace Hazel
 
 		WriteBytesToConnection(bytes);
 
-		Statistics.LogUnreliableSend(data.GetLength(), bytes.GetLength());
+		GetStatistics().LogUnreliableSend(data.GetLength(), bytes.GetLength());
 	}
 
 	void UdpConnection::InvokeDataReceived(SendOption send_option, Bytes buffer, int offset)

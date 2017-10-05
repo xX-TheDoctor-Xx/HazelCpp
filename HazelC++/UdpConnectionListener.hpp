@@ -10,8 +10,6 @@ namespace Hazel
 {
 	class UdpConnectionListener : public NetworkConnectionListener
 	{
-		Poco::Net::TCPServer *listener;
-
 		Bytes buffer;
 		//std::map<NetworkEndPoint, UdpServerConnection> connections;
 		std::mutex listener_mutex;

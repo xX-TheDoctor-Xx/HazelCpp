@@ -45,9 +45,6 @@
     <ClInclude Include="DisconnectedEventArgs.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ConnectionEndPoint.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ConnectionStatistics.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -108,13 +105,7 @@
     <ClInclude Include="TcpConnection.hpp">
       <Filter>Header Files\Tcp</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkSocket.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Socket.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LingerOption.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Bytes.hpp">
@@ -122,6 +113,21 @@
     </ClInclude>
     <ClInclude Include="ManualResetEvent.hpp">
       <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="UdpSocket.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpSocket.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpClient.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpServer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketException.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -145,9 +151,6 @@
     </ClCompile>
     <ClCompile Include="UdpConnection.cpp">
       <Filter>Source Files\Udp</Filter>
-    </ClCompile>
-    <ClCompile Include="NetworkConnection.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>Source Files\Util</Filter>
@@ -191,13 +194,7 @@
     <ClCompile Include="TcpConnection.cpp">
       <Filter>Source Files\Tcp</Filter>
     </ClCompile>
-    <ClCompile Include="NetworkSocket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Socket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LingerOption.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Bytes.cpp">
@@ -205,6 +202,24 @@
     </ClCompile>
     <ClCompile Include="ManualResetEvent.cpp">
       <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="UdpSocket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpSocket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HazelException.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
