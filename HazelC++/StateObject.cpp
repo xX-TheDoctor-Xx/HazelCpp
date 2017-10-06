@@ -2,15 +2,7 @@
 
 namespace Hazel
 {
-	StateObject::StateObject(int length, GenericFunction<void, Bytes> callback) : buffer(new byte[length](), length)
+	StateObject::StateObject(int length, std::function<void(Bytes)> callback) : buffer(new byte[length](), length), total_bytes_received(0), callback(callback)
 	{
-		total_bytes_received = 0;
-		this->callback = callback;
-	}
-
-	StateObject::~StateObject()
-	{
-		//should i do this?
-		//delete[] buffer;
 	}
 }

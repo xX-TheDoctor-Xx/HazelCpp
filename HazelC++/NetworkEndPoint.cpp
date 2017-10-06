@@ -66,7 +66,7 @@ namespace Hazel
 		return address_.ss_family == AF_INET6;
 	}
 
-	const sockaddr_storage & NetworkEndPoint::address() const throw()
+	sockaddr_storage & NetworkEndPoint::address() throw()
 	{
 		return address_;
 	}
@@ -253,6 +253,18 @@ namespace Hazel
 	void NetworkEndPoint::operator=(const char * ip)
 	{
 		str(ip);
+	}
+
+	bool NetworkEndPoint::operator==(NetworkEndPoint & ip)
+	{
+		sockaddr_storage &addr = address();
+
+		return addr.ss_family == ip.address().ss_family &&
+			addr.__ss_pad1 == ip.address().__ss_pad1 &&
+			addr.__ss_pad2 == ip.address().__ss_pad2 &&
+			addr.__ss_align == ip.address().__ss_align &&
+			size_ == ip.size() &&
+			mask_ == subnet_mask();
 	}
 
 	NetworkEndPoint::operator const struct sockaddr_in&() const throw()

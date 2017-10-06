@@ -87,15 +87,5 @@ namespace Hazel
 		Udp = SOCK_DGRAM 
 	};
 
-	class Util
-	{
-	public:
-		static bool IsBigEndian();
-		static bool SupportsIPv6();
-		static void BlockCopy(void *source, unsigned int source_offset, void *destination, unsigned int destination_offset, unsigned int count);
-		static bool FillAddr(const std::string & localAddress, unsigned short localPort, sockaddr_in *localAddr);
-		static bool FillAddr(const std::string & localAddress, unsigned short localPort, sockaddr *localAddr);
-	};
-
 	#define lock(x, fn) std::lock_guard<std::mutex> *lock = new std::lock_guard<std::mutex>(x); fn(); delete lock;
 }

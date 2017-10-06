@@ -92,7 +92,7 @@ namespace Hazel
 		return Socket::recvfrom(data, datasize, ip);
 	}
 
-	long UdpSocket::sendto(const void * data, size_t datasize, const NetworkEndPoint & ip)
+	long UdpSocket::sendto(const void * data, size_t datasize, NetworkEndPoint & ip)
 	{
 		return Socket::sendto(data, datasize, ip);
 	}

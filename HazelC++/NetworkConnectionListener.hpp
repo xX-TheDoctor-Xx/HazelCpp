@@ -9,6 +9,7 @@ namespace Hazel
 		NetworkEndPoint end_point;
 
 	public:
+		NetworkConnectionListener();
 		NetworkEndPoint GetEndPoint();
 
 	protected:

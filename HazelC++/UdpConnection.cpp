@@ -1,4 +1,5 @@
 #include "UdpConnection.hpp"
+#include "Util.hpp"
 
 #include <algorithm>
 
@@ -24,7 +25,7 @@ namespace Hazel
 
 	void KeepAliveTimerCallback(UdpConnection *con)
 	{
-		con->SendHello(Bytes(nullptr, -1), GenericFunction<void>());
+		con->SendHello(Bytes(nullptr, -1), std::function<void()>());
 	}
 
 	void UdpConnection::InitializeKeepAliveTimer()
@@ -32,7 +33,7 @@ namespace Hazel
 		auto fn = [this]()
 		{
 			keep_alive_timer.SetInterval(keep_alive_interval);
-			keep_alive_timer.callback.Set(KeepAliveTimerCallback);
+			keep_alive_timer.callback = KeepAliveTimerCallback;
 			keep_alive_timer.Start(this);
 		};
 
@@ -258,7 +259,8 @@ namespace Hazel
 		lock(packet.GetTimerMutex(), fn)
 	}
 
-	void UdpConnection::AttachReliableID(Bytes buffer, int offset, GenericFunction<void> &ack_callback)
+	template<typename ...Args>
+	void UdpConnection::AttachReliableID(Bytes buffer, int offset, std::function<void(Args...)> &ack_callback, ...)
 	{
 		auto fn = [this, buffer, offset, ack_callback]()
 		{
@@ -275,10 +277,8 @@ namespace Hazel
 			nonconst_bytes[offset + 1] = (byte)id;
 
 			Packet packet = Packet::GetObject();
-			GenericFunction<void, UdpConnection*, Packet&> func;
-			func.Set(packet_resend_action);
 
-			packet.Set(buffer, this, func, resend_timeout.load() > 0 ? resend_timeout.load() : (GetAveragePing() != 0 ? GetAveragePing() * 4 : 200), const_cast<Hazel::GenericFunction<void>&>(ack_callback));
+			packet.Set(buffer, this, std::function<void(UdpConnection*, Packet&)>(packet_resend_action), resend_timeout.load() > 0 ? resend_timeout.load() : (GetAveragePing() != 0 ? GetAveragePing() * 4 : 200), const_cast<std::function<void(Args...)>&>(ack_callback));
 
 			reliable_data_packets_sent.insert(std::make_pair(id, packet));
 		};
@@ -286,7 +286,8 @@ namespace Hazel
 		lock(reliable_data_packets_sent_mutex, fn)
 	}
 
-	void UdpConnection::ReliableSend(byte send_option, Bytes data, GenericFunction<void> &ack_callback)
+	template<typename ...Args>
+	void UdpConnection::ReliableSend(byte send_option, Bytes data, std::function<void(Args...)> &ack_callback, ...)
 	{
 		Bytes bytes(new byte[data.GetLength() + 3](), data.GetLength() + 3);
 
@@ -383,14 +384,14 @@ namespace Hazel
 
 	void UdpConnection::SendBytes(Bytes bytes, SendOption send_option)
 	{
-		// throw new InvalidOperationException("Could not send data as this Connection is not connected. Did you disconnect?");
 		if (GetState() != ConnectionState::Connected)
 			throw HazelException("Could not send data as this Connection is not connected. Did you disconnect?");
 
 		HandleSend(bytes, (byte)send_option);
 	}
 
-	void UdpConnection::HandleSend(Bytes data, byte send_option, GenericFunction<void> &ack_callback)
+	template<typename ...Args>
+	void UdpConnection::HandleSend(Bytes data, byte send_option, std::function<void(Args...)> &ack_callback, ...)
 	{
 		ResetKeepAliveTimer();
 
@@ -488,7 +489,8 @@ namespace Hazel
 		Connection::InvokeDataReceived(bytes, send_option);
 	}
 
-	void UdpConnection::SendHello(Bytes bytes, GenericFunction<void> &acknowledge_callback)
+	template<typename ...Args>
+	void UdpConnection::SendHello(Bytes bytes, std::function<void(Args...)> &acknowledge_callback, ...)
 	{
 		Bytes actual_bytes;
 		if (!bytes.IsValid())

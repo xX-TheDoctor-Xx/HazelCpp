@@ -81,6 +81,6 @@ namespace Hazel
 		bool bind(const NetworkEndPoint & ip);
 
 		long recvfrom(void* data, size_t datasize, NetworkEndPoint & ip);
-		long sendto(const void* data, size_t datasize, const NetworkEndPoint & ip);
+		long sendto(const void* data, size_t datasize, NetworkEndPoint & ip);
 	};
 }

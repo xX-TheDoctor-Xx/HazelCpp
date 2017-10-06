@@ -1,4 +1,5 @@
 #include "Connection.hpp"
+#include "Stopwatch.hpp"
 
 namespace Hazel
 {
@@ -17,7 +18,7 @@ namespace Hazel
 		return State.load();
 	}
 
-	Connection::Connection()
+	Connection::Connection() : DataReceived(std::function<void(DataReceivedEventArgs&)>()), Disconnected(std::function<void(DisconnectedEventArgs&)>())
 	{
 		State = ConnectionState::NotConnected;
 	}
@@ -27,28 +28,31 @@ namespace Hazel
 		State = state;
 		
 		if (state == ConnectionState::Connected)
-			connection_wait_lock.Set();
+			connected = true;
 		else
-			connection_wait_lock.Reset();
+			connected = false;
 	}
 
 	void Connection::InvokeDataReceived(Bytes bytes, SendOption sendOption)
 	{
 		DataReceivedEventArgs args = DataReceivedEventArgs::GetObject();
 		args.Set(bytes, sendOption);
-		DataReceived.Call(args);
+		DataReceived(args);
 	}
 
 	void Connection::InvokeDisconnected(const HazelException &e)
 	{
 		DisconnectedEventArgs args = DisconnectedEventArgs::GetObject();
 		args.Set(e);
-		Disconnected.Call(args);
+		Disconnected(args);
 	}
 
 	bool Connection::WaitOnConnect(int timeout)
 	{
-		return connection_wait_lock.Wait(timeout);
+		Stopwatch stopwatch;
+		stopwatch.Start();
+		while (stopwatch.GetElapsedMilliseconds() < timeout && !connected);
+		return connected;
 	}
 
 	void Connection::SetEndPoint(NetworkEndPoint end_point)

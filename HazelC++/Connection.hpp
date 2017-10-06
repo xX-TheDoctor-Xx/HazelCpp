@@ -6,9 +6,7 @@
 #include "DisconnectedEventArgs.hpp"
 #include "NetworkEndPoint.hpp"
 #include "ConnectionStatistics.hpp"
-#include "ManualResetEvent.hpp"
 #include "HazelException.hpp"
-#include "GenericFunction.hpp"
 #include "Bytes.hpp"
 
 namespace Hazel
@@ -18,8 +16,8 @@ namespace Hazel
 	public:
 		Connection();
 
-		GenericFunction<DataReceivedEventArgs> DataReceived;
-		GenericFunction<DisconnectedEventArgs> Disconnected;
+		std::function<void(DataReceivedEventArgs&)> DataReceived;
+		std::function<void(DisconnectedEventArgs&)> Disconnected;
 
 		NetworkEndPoint GetEndpoint();
 		void SetEndPoint(NetworkEndPoint end_point);
@@ -41,6 +39,6 @@ namespace Hazel
 		ConnectionStatistics Statistics;
 		std::atomic<ConnectionState> State;
 
-		ManualResetEvent connection_wait_lock;
+		volatile bool connected;
 	};
 }

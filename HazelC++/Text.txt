@@ -16,11 +16,6 @@ check UdpClientConnection::send_hello
 
 //////////////
 
-begin-> takes callback and executes in new thread when begin is executed
-call end in callback
-
-end->waits for operation to complete, exception or just return
-
-BIG THING -> add identifiers so that the begin can match the corresponding end call
+async-> waits for operation to complete and call callback in the same thread
 
 ///////////////

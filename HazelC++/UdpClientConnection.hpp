@@ -9,11 +9,11 @@ namespace Hazel
 {
 	class UdpClientConnection;
 
-	void read_callback(UdpClientConnection *con);
+	void read_callback(UdpClientConnection *con, Bytes &bytes, bool has_error);
 
 	class UdpClientConnection : public UdpConnection, public UdpSocket
 	{
-		friend void read_callback(UdpClientConnection *con);
+		friend void read_callback(UdpClientConnection *con, Bytes &bytes, bool has_error);
 
 	public:
 		std::mutex socket_mutex;

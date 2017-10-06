@@ -11,7 +11,7 @@ namespace Hazel
 	}
 
 	template<typename ...Args>
-	void Timer<Args...>::SetCallback(GenericFunction<void, Args...> &callback)
+	void Timer<Args...>::SetCallback(std::function<void(Args...)> &callback)
 	{
 		this->callback = callback;
 	}
@@ -52,7 +52,7 @@ namespace Hazel
 
 		SetInterval(0);
 		stop = false;
-		callback = GenericFunction<void, Args...>();
+		callback = 0;
 	}
 
 	template<typename... Args>
@@ -60,7 +60,7 @@ namespace Hazel
 	{
 		while (!timer->stop)
 		{
-			timer->callback.Call(...); 
+			timer->callback(...); 
 			std::this_thread::sleep_for(std::chrono::milliseconds(timer->interval));
 		}
 	}

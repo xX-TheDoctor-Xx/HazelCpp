@@ -1,5 +1,6 @@
 #include "UdpClientConnection.hpp"
 #include "SocketException.hpp"
+#include "Util.hpp"
 
 namespace Hazel
 {
@@ -29,7 +30,7 @@ namespace Hazel
 		{
 			auto fn = [con]()
 			{
-				con->EndSendTo();
+				//con->EndSendTo();
 			};
 
 			lock(con->socket_mutex, fn);
@@ -49,8 +50,7 @@ namespace Hazel
 
 			try
 			{
-				std::function<void(UdpClientConnection*)> func(write_bytes_to_connection_callback);
-				Socket::BeginSendTo(bytes, GetEndpoint(), func, this);
+
 			}
 			catch (SocketException&)
 			{
@@ -63,12 +63,14 @@ namespace Hazel
 		lock(socket_mutex, fn)
 	}
 
-	void hello_func()
+	void hello_func(UdpClientConnection *con)
 	{
-		/*lock(socket_mutex)
+		auto fn = [con]()
 		{
-			SetState(ConnectionState::Connected);
-		}*/
+			con->SetState(ConnectionState::Connected);
+		};
+
+		lock(con->socket_mutex, fn)
 	}
 
 	void UdpClientConnection::Connect(Bytes bytes, int timeout)
@@ -100,9 +102,7 @@ namespace Hazel
 				throw HazelException("A Socket exception occured while initiating a receive operation.");
 			}
 
-			GenericFunction<void> func;
-			func.Set(hello_func);
-			SendHello(bytes, func);
+			SendHello(bytes, std::function<void(UdpClientConnection*)>(hello_func), this);
 
 			if (!WaitOnConnect(timeout))
 			{
@@ -150,7 +150,7 @@ namespace Hazel
 		lock(socket_mutex, fn)
 	}
 
-	void read_callback(UdpClientConnection *con)
+	void read_callback(UdpClientConnection *con, Bytes &bytes, bool has_error)
 	{
 		long bytes_received;
 
@@ -158,7 +158,7 @@ namespace Hazel
 		{
 			auto fn = [con, bytes_received]()
 			{
-				const_cast<long&>(bytes_received) = con->EndReceiveFrom();
+				//const_cast<long&>(bytes_received) = con->EndReceiveFrom();
 			};
 
 			lock(con->socket_mutex, fn);
@@ -175,8 +175,8 @@ namespace Hazel
 			return;
 		}
 
-		Bytes bytes(new byte[bytes_received], bytes_received);
-		Util::BlockCopy(con->data_buffer.GetBytes(), 0, bytes.GetBytes(), 0, bytes_received);
+		Bytes new_bytes(new byte[bytes_received], bytes_received);
+		Util::BlockCopy(con->data_buffer.GetBytes(), 0, new_bytes.GetBytes(), 0, bytes_received);
 
 		try
 		{
@@ -187,15 +187,14 @@ namespace Hazel
 			con->HandleDisconnect(HazelException());
 		}
 
-		con->HandleReceive(bytes);
+		con->HandleReceive(new_bytes);
 	}
 
 	void UdpClientConnection::StartListeningForData()
 	{
 		auto fn = [this]()
 		{
-			std::function<void(UdpClientConnection*)> func(read_callback);
-			Socket::BeginReceiveFrom(data_buffer.GetBytes(), data_buffer.GetLength(), GetEndpoint(), func, this);
+
 		};
 
 		lock(socket_mutex, fn)

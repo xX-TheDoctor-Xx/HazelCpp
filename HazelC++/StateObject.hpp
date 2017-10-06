@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Hazel.hpp"
-#include "GenericFunction.hpp"
 #include "Bytes.hpp"
 
 namespace Hazel
@@ -10,11 +9,9 @@ namespace Hazel
 	{
 		Bytes buffer;
 		int total_bytes_received;
-		GenericFunction<void, Bytes> callback;
+		std::function<void(Bytes)> callback;
 
 	public:
-		StateObject(int length, GenericFunction<void, Bytes> callback);
-
-		~StateObject();
+		StateObject(int length, std::function<void(Bytes)> callback);
 	};
 }

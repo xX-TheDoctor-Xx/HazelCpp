@@ -58,8 +58,12 @@ namespace Hazel
 		std::atomic_long total_reliable_messages;
 		std::atomic_int resends_before_disconnect = 3;
 
-		void AttachReliableID(Bytes buffer, int offset, GenericFunction<void> &ack_callback = GenericFunction<void>()); // is ackCallback of type std::function<void()>? or do i need params?
-		void ReliableSend(byte send_option, Bytes data, GenericFunction<void> &ack_callback = GenericFunction<void>());
+		template<typename ...Args>
+		void AttachReliableID(Bytes buffer, int offset, std::function<void(Args...)> &ack_callback = std::function<void(Args...)>(), ...); // is ackCallback of type std::function<void()>? or do i need params?
+
+		template<typename ...Args>
+		void ReliableSend(byte send_option, Bytes data, std::function<void(Args...)> &ack_callback = std::function<void(Args...)>(), ...);
+
 		void ReliableMessageReceive(Bytes buffer);
 		bool ProcessReliableReceive(Bytes bytes, int offset);
 		void AcknowledgementMessageReceive(Bytes bytes);
@@ -100,9 +104,12 @@ namespace Hazel
 		//Udp Connection
 		virtual void WriteBytesToConnection(Bytes bytes) = 0;
 
-		void HandleSend(Bytes data, byte send_option, GenericFunction<void> &ack_callback = GenericFunction<void>());
+		template<typename ...Args>
+		void HandleSend(Bytes data, byte send_option, std::function<void(Args...)> &ack_callback = std::function<void(Args...)>(), ...);
 
-		void SendHello(Bytes bytes, GenericFunction<void> &acknowledge_callback);
+		template<typename ...Args>
+		void SendHello(Bytes bytes, std::function<void(Args...)> &acknowledge_callback, ...);
+
 		void SendDisconnect();
 	};
 }

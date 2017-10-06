@@ -4,6 +4,7 @@
 
 #undef lock
 #include <future>
+#include <mutex>
 
 namespace Hazel
 {
@@ -398,13 +399,13 @@ namespace Hazel
 		return r;
 	}
 
-	long Socket::sendto(const void * data, size_t datasize, const NetworkEndPoint & ip)
+	long Socket::sendto(const void * data, size_t datasize, NetworkEndPoint & ip)
 	{
 		if (!ip.valid()) {
 			error_text("basic_socket::sendto(): IP address is invalid", true);
 			return -1;
 		}
-		typename sockaddr_storage sa = ip.address();
+		sockaddr_storage &sa = ip.address();
 		typename socklen_t lsa = ip.size();
 		long r = ::sendto(id_, (const char*)data, datasize, 0, (struct sockaddr*) (&sa), lsa);
 		if (r == SOCKET_ERROR && analyze_error(r))
@@ -470,48 +471,5 @@ namespace Hazel
 #else
 		return ::strerror(err);
 #endif
-	}
-
-	bool send_to_finished = false;
-
-	void send_to_threaded(Socket *soc, Bytes bytes, NetworkEndPoint &ip)
-	{
-		soc->sendto(bytes.GetBytes(), bytes.GetLength(), ip);
-
-		send_to_finished = true;
-	}
-
-	template<typename ...Args>
-	void Socket::BeginSendTo(Bytes bytes, NetworkEndPoint &ip, std::function<void(Args...)> callback, ...)
-	{
-		std::thread send_to_thread(send_to_threaded, this, bytes, ip);
-		std::thread callback_thread(callback, ...);
-	}
-
-	void Socket::EndSendTo()
-	{
-		while (!send_to_finished);
-	}
-
-	volatile bool receive_from_finished = false;
-	volatile long receive_from_received = 0;
-
-	void receive_from_threaded(Socket *soc, byte *bytes, int size, NetworkEndPoint &ip)
-	{
-		receive_from_received = soc->recvfrom(bytes, size, ip);
-		receive_from_finished = true;
-	}
-
-	template<typename ...Args>
-	void Socket::BeginReceiveFrom(byte * bytes, int size, NetworkEndPoint &ip, std::function<void(Args...)> callback, ...)
-	{
-		std::thread receive_from_thread(receive_from_threaded, this, bytes, size, ip);
-		std::thread callback_thread(callback, ...);
-	}
-
-	long Socket::EndReceiveFrom()
-	{
-		while (!receive_from_finished);
-		return receive_from_received;
 	}
 }

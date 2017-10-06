@@ -18,7 +18,7 @@ namespace Hazel
 		static Packet CreateObject();
 
 		Bytes data;
-		GenericFunction<void> ack_callback;
+		std::function<void()> ack_callback;
 		std::atomic_int last_timeout;
 		std::atomic_bool acknowledged;
 		std::atomic_int retransmissions;
@@ -35,7 +35,7 @@ namespace Hazel
 
 		~Packet();
 
-		void Set(Bytes data, UdpConnection *con, GenericFunction<void, UdpConnection*, Packet&> &resend_action, int timeout, GenericFunction<void> &ack_callback);
+		void Set(Bytes data, UdpConnection *con, std::function<void(UdpConnection*, Packet&)> &resend_action, int timeout, std::function<void()> &ack_callback);
 		Bytes GetData();
 		int GetLastTimeout();
 		void IncrementLastTimeout(int value);

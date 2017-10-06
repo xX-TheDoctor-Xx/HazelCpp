@@ -2,6 +2,10 @@
 
 namespace Hazel
 {
+	NetworkConnectionListener::NetworkConnectionListener()
+	{
+	}
+
 	NetworkEndPoint NetworkConnectionListener::GetEndPoint()
 	{
 		return end_point;

@@ -87,7 +87,7 @@ namespace Hazel
 		bool is_v4() const throw();
 		bool is_v6() const throw();
 
-		const sockaddr_storage & address() const throw ();
+		sockaddr_storage & address() throw ();
 		void address(const sockaddr_storage & adr) throw ();
 
 		ulong family() const throw ();
@@ -111,6 +111,8 @@ namespace Hazel
 		void operator=(const sockaddr_in6 & adr) throw ();
 		void operator=(const std::string & ip);
 		void operator=(const char* ip);
+
+		bool operator==(NetworkEndPoint &ip);
 
 		operator const struct sockaddr_in & () const throw ();
 		operator const struct sockaddr_in6 & () const throw ();

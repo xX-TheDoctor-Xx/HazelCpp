@@ -5,22 +5,18 @@
 #include "UdpServerConnection.hpp"
 #include "UdpSocket.hpp"
 
-#include <map>
-
 namespace Hazel
 {
 	class UdpConnectionListener;
 
 	void read_callback(UdpConnectionListener *listener, Bytes &bytes);
-	void send_data_callback(UdpConnectionListener *listener);
 
 	class UdpConnectionListener : public NetworkConnectionListener, public UdpSocket
 	{
 		friend void read_callback(UdpConnectionListener *listener, Bytes &bytes);
-		friend void send_data_callback(UdpConnectionListener *listener);
 
 		Bytes data_buffer;
-		std::map<NetworkEndPoint, UdpServerConnection*> connections;
+		std::map<int, std::pair<NetworkEndPoint, UdpServerConnection*>> connections;
 		std::mutex listener_mutex;
 		std::mutex connections_mutex;
 

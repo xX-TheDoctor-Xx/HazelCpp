@@ -14,6 +14,7 @@ namespace Hazel
 
 	long long Stopwatch::GetElapsedMilliseconds()
 	{
+		Stop();
 		return std::chrono::duration_cast<std::chrono::microseconds>(stop_point - start_point).count();
 	}
 }

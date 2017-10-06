@@ -3,7 +3,6 @@
 #include <functional>
 
 #include "NewConnectionEventArgs.hpp"
-#include "GenericFunction.hpp"
 #include "Bytes.hpp"
 
 namespace Hazel
@@ -11,7 +10,8 @@ namespace Hazel
 	class ConnectionListener
 	{
 	public:
-		GenericFunction<void, NewConnectionEventArgs> NewConnection;
+		ConnectionListener();
+		std::function<void(NewConnectionEventArgs)> NewConnection;
 
 		virtual void Start() = 0;
 
