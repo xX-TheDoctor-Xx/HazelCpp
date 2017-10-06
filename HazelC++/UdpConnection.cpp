@@ -234,7 +234,7 @@ namespace Hazel
 				nonconst_packet.IncrementLastTimeout(nonconst_packet.GetLastTimeout() * 2);
 				nonconst_packet.GetTimer().SetInterval(nonconst_packet.GetLastTimeout());
 				nonconst_packet.GetTimer().Start(conn, nonconst_packet);
-				nonconst_packet.IncrementRetransmissions(1); // does it get incremented in Hazel C#?
+				nonconst_packet.IncrementRetransmissions(1);
 				if (nonconst_packet.GetRetransmissions() > conn->GetResendsBeforeDisconnect())
 				{
 					conn->HandleDisconnect();

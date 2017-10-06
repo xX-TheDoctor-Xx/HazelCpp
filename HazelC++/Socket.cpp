@@ -1,5 +1,9 @@
 #include "Socket.hpp"
 #include "SocketException.hpp"
+#include "Stopwatch.hpp"
+
+#undef lock
+#include <future>
 
 namespace Hazel
 {
@@ -409,6 +413,15 @@ namespace Hazel
 		return r;
 	}
 
+	bool Socket::connect(int timeout)
+	{
+		Stopwatch clock;
+		clock.Start();
+		bool ret = false;
+		while (clock.GetElapsedMilliseconds() != timeout && (ret = connect()));
+		return true;
+	}
+
 	long Socket::analyze_error(long fn_return) const
 	{
 		if (fn_return == SOCKET_ERROR) {
@@ -457,5 +470,48 @@ namespace Hazel
 #else
 		return ::strerror(err);
 #endif
+	}
+
+	bool send_to_finished = false;
+
+	void send_to_threaded(Socket *soc, Bytes bytes, NetworkEndPoint &ip)
+	{
+		soc->sendto(bytes.GetBytes(), bytes.GetLength(), ip);
+
+		send_to_finished = true;
+	}
+
+	template<typename ...Args>
+	void Socket::BeginSendTo(Bytes bytes, NetworkEndPoint &ip, std::function<void(Args...)> callback, ...)
+	{
+		std::thread send_to_thread(send_to_threaded, this, bytes, ip);
+		std::thread callback_thread(callback, ...);
+	}
+
+	void Socket::EndSendTo()
+	{
+		while (!send_to_finished);
+	}
+
+	volatile bool receive_from_finished = false;
+	volatile long receive_from_received = 0;
+
+	void receive_from_threaded(Socket *soc, byte *bytes, int size, NetworkEndPoint &ip)
+	{
+		receive_from_received = soc->recvfrom(bytes, size, ip);
+		receive_from_finished = true;
+	}
+
+	template<typename ...Args>
+	void Socket::BeginReceiveFrom(byte * bytes, int size, NetworkEndPoint &ip, std::function<void(Args...)> callback, ...)
+	{
+		std::thread receive_from_thread(receive_from_threaded, this, bytes, size, ip);
+		std::thread callback_thread(callback, ...);
+	}
+
+	long Socket::EndReceiveFrom()
+	{
+		while (!receive_from_finished);
+		return receive_from_received;
 	}
 }

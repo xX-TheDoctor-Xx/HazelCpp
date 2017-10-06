@@ -22,7 +22,7 @@ namespace Hazel
 		{
 			if (GetState() != ConnectionState::Connected)
 			{
-				//throw new InvalidOperationException("Could not send data as this Connection is not connected. Did you disconnect?");
+				throw HazelException("Could not send data as this Connection is not connected. Did you disconnect?");
 			}
 
 			//listener->SendData(bytes, GetEndpoint());
@@ -33,7 +33,7 @@ namespace Hazel
 
 	void UdpServerConnection::Connect(Bytes bytes, int timeout)
 	{
-		//throw new HazelException("Cannot manually connect a UdpServerConnection, did you mean to use UdpClientConnection?");
+		throw HazelException("Cannot manually connect a UdpServerConnection, did you mean to use UdpClientConnection?");
 	}
 
 	void UdpServerConnection::HandleDisconnect(HazelException & e)
@@ -46,8 +46,11 @@ namespace Hazel
 
 		lock(state_mutex, fn)
 
-		if (e.ShouldHandle())
-			InvokeDisconnected(e);
+			if (e.ShouldHandle())
+			{
+				InvokeDisconnected(e);
+				Close();
+			}
 	}
 
 	void UdpServerConnection::Disconnect()
@@ -62,5 +65,19 @@ namespace Hazel
 		};
 
 		lock(state_mutex, fn)
+	}
+
+	void UdpServerConnection::Close()
+	{
+		if (GetState() == ConnectionState::Connected)
+			SendDisconnect();
+
+		auto fn = [this]()
+		{
+			//listener->RemoveConnectionTo(GetEndpoint);
+			SetState(ConnectionState::NotConnected);
+		};
+
+		lock(state_mutex, fn);
 	}
 }

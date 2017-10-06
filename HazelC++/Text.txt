@@ -8,6 +8,19 @@ check if GenericFunction works
 
 Cant get ManualResetEvent right mhhhhhhhhhhh
 
-check udpconnection::packet_resend_action
-
 implement error codes?
+
+//////////////////////////
+
+check UdpClientConnection::send_hello
+
+//////////////
+
+begin-> takes callback and executes in new thread when begin is executed
+call end in callback
+
+end->waits for operation to complete, exception or just return
+
+BIG THING -> add identifiers so that the begin can match the corresponding end call
+
+///////////////

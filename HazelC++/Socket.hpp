@@ -127,6 +127,19 @@ namespace Hazel
 		long recvfrom(void* data, size_t datasize, NetworkEndPoint & ip);
 		long sendto(const void* data, size_t datasize, const NetworkEndPoint & ip);
 
+		bool connect(int timeout);
+
+	public: // threaded begin and end stuff
+		template<typename ...Args>
+		void BeginSendTo(Bytes bytes, NetworkEndPoint &ip, std::function<void(Args...)> callback, ...);
+
+		void EndSendTo();
+
+		template<typename ...Args>
+		void BeginReceiveFrom(byte *bytes, int size, NetworkEndPoint &ip, std::function<void(Args...)> callback, ...);
+
+		long EndReceiveFrom();
+
 	protected:
 		long analyze_error(long fn_return) const;
 

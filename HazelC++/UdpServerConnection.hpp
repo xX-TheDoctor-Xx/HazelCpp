@@ -23,5 +23,6 @@ namespace Hazel
 	protected:
 		void HandleDisconnect(HazelException &e = HazelException()) override;
 		void Disconnect();
+		void Close();
 	};
 }

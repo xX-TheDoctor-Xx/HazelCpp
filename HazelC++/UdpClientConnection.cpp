@@ -1,4 +1,5 @@
 #include "UdpClientConnection.hpp"
+#include "SocketException.hpp"
 
 namespace Hazel
 {
@@ -22,16 +23,41 @@ namespace Hazel
 		lock(socket_mutex, fn)
 	}
 
+	void write_bytes_to_connection_callback(UdpClientConnection *con)
+	{
+		try
+		{
+			auto fn = [con]()
+			{
+				con->EndSendTo();
+			};
+
+			lock(con->socket_mutex, fn);
+		}
+		catch (SocketException&)
+		{
+			con->HandleDisconnect(HazelException("Could not send data a sa SocketException occured"));
+		}
+	}
+
 	void UdpClientConnection::WriteBytesToConnection(Bytes bytes)
 	{
-		auto fn = [this]()
+		auto fn = [this, bytes]()
 		{
 			if (GetState() != ConnectionState::Connected && GetState() != ConnectionState::Connecting)
-			{
-				//throw new InvalidOperationException("Could not send data as this Connection is not connected and is not connecting. Did you disconnect?");
-			}
+				throw HazelException("Could not send data as this Connection is not connected and is not connecting. Did you disconnect?");
 
-			//int sent = send()
+			try
+			{
+				std::function<void(UdpClientConnection*)> func(write_bytes_to_connection_callback);
+				Socket::BeginSendTo(bytes, GetEndpoint(), func, this);
+			}
+			catch (SocketException&)
+			{
+				HazelException ex("Could not send data as a SocketException occured.");
+				HandleDisconnect(ex);
+				throw ex;
+			}
 		};
 
 		lock(socket_mutex, fn)
@@ -50,20 +76,18 @@ namespace Hazel
 		auto fn = [this, bytes, timeout]()
 		{
 			if (GetState() != ConnectionState::NotConnected)
-			{
-				//throw new InvalidOperationException("Cannot connect as the Connection is already connected.");
-			}
+				throw HazelException("Cannot connect as the Connection is already connected.");
 
 			SetState(ConnectionState::Connecting);
 
 			try
 			{
-				UdpSocket::bind(std::string("0.0.0.0") + '0');
+				UdpSocket::bind(std::string("0.0.0.0:0"));
 			}
 			catch (HazelException&)
 			{
 				SetState(ConnectionState::NotConnected);
-				//throw new HazelException("A socket exception occured while binding to the port.", e);
+				throw HazelException("A socket exception occured while binding to the port.");
 			}
 
 			try
@@ -72,19 +96,18 @@ namespace Hazel
 			}
 			catch (HazelException&)
 			{
-				SetState(ConnectionState::NotConnected);
-				//throw new HazelException("A Socket exception occured while initiating a receive operation.", e);
+				Close();
+				throw HazelException("A Socket exception occured while initiating a receive operation.");
 			}
 
 			GenericFunction<void> func;
 			func.Set(hello_func);
 			SendHello(bytes, func);
 
-			bool timed_out = !WaitOnConnect(timeout);
-
-			if (timed_out)
+			if (!WaitOnConnect(timeout))
 			{
-				// throw new HazelException("Connection attempt timed out.");
+				Close();
+				throw HazelException("Connection attempt timed out.");
 			}
 		};
 
@@ -127,11 +150,52 @@ namespace Hazel
 		lock(socket_mutex, fn)
 	}
 
+	void read_callback(UdpClientConnection *con)
+	{
+		long bytes_received;
+
+		try
+		{
+			auto fn = [con, bytes_received]()
+			{
+				const_cast<long&>(bytes_received) = con->EndReceiveFrom();
+			};
+
+			lock(con->socket_mutex, fn);
+		}
+		catch (SocketException&)
+		{
+			con->HandleDisconnect(HazelException("A socket exception occured while reading data."));
+			return;
+		}
+
+		if (bytes_received == 0)
+		{
+			con->HandleDisconnect(HazelException());
+			return;
+		}
+
+		Bytes bytes(new byte[bytes_received], bytes_received);
+		Util::BlockCopy(con->data_buffer.GetBytes(), 0, bytes.GetBytes(), 0, bytes_received);
+
+		try
+		{
+			con->StartListeningForData();
+		}
+		catch (SocketException&)
+		{
+			con->HandleDisconnect(HazelException());
+		}
+
+		con->HandleReceive(bytes);
+	}
+
 	void UdpClientConnection::StartListeningForData()
 	{
 		auto fn = [this]()
 		{
-			//socket.BeginReceive(dataBuffer, 0, dataBuffer.Length, SocketFlags.None, ReadCallback, dataBuffer);
+			std::function<void(UdpClientConnection*)> func(read_callback);
+			Socket::BeginReceiveFrom(data_buffer.GetBytes(), data_buffer.GetLength(), GetEndpoint(), func, this);
 		};
 
 		lock(socket_mutex, fn)

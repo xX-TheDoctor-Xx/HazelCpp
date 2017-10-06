@@ -7,8 +7,14 @@
 
 namespace Hazel
 {
+	class UdpClientConnection;
+
+	void read_callback(UdpClientConnection *con);
+
 	class UdpClientConnection : public UdpConnection, public UdpSocket
 	{
+		friend void read_callback(UdpClientConnection *con);
+
 	public:
 		std::mutex socket_mutex;
 
@@ -21,9 +27,10 @@ namespace Hazel
 		UdpClientConnection(NetworkEndPoint remote_end_point);
 		void Connect(Bytes bytes = Bytes(nullptr, -1), int timeout = 5000) override;
 
+		void HandleDisconnect(HazelException &e) override;
+
 	protected:
 		void WriteBytesToConnection(Bytes bytes) override;
-		void HandleDisconnect(HazelException &e) override;
 		void Close();
 	};
 }

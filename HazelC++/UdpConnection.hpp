@@ -11,6 +11,8 @@
 
 namespace Hazel
 {
+	class UdpConnection;
+
 	void packet_resend_action(UdpConnection *conn, Packet &packet);
 	void KeepAliveTimerCallback(UdpConnection *con);
 
@@ -90,15 +92,17 @@ namespace Hazel
 
 		void SendBytes(Bytes bytes, SendOption send_option = SendOption::None) override;
 
+		virtual void HandleDisconnect(HazelException &e = HazelException()) = 0;
+
+		void HandleReceive(Bytes buffer);
+
 	protected:
 		//Udp Connection
 		virtual void WriteBytesToConnection(Bytes bytes) = 0;
 
 		void HandleSend(Bytes data, byte send_option, GenericFunction<void> &ack_callback = GenericFunction<void>());
-		void HandleReceive(Bytes buffer);
 
 		void SendHello(Bytes bytes, GenericFunction<void> &acknowledge_callback);
-		virtual void HandleDisconnect(HazelException &e = HazelException()) = 0;
 		void SendDisconnect();
 	};
 }
