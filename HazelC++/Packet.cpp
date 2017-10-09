@@ -27,7 +27,7 @@ namespace Hazel
 		Recycle();
 	}
 
-	void Packet::Set(Bytes data, UdpConnection *con, std::function<void(UdpConnection*, Packet&)> &resend_action, int timeout, std::function<void()> &ack_callback)
+	void Packet::Set(Bytes &data, UdpConnection *con, std::function<void(UdpConnection*, Packet&)> &resend_action, int timeout, std::function<void()> &ack_callback)
 	{
 		this->data = data;
 
@@ -93,7 +93,7 @@ namespace Hazel
 
 	void Packet::Recycle()
 	{
-		lock(timer_mutex, [this]()
+		lock_mutex(timer_mutex, [this]()
 		{
 			timer.Stop();
 		});

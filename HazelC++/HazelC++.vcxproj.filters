@@ -33,9 +33,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Connection.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DataReceivedEventArgs.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -46,9 +43,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ConnectionStatistics.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ConnectionListener.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NewConnectionEventArgs.hpp">
@@ -126,11 +120,17 @@
     <ClInclude Include="Util.hpp">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
+    <ClInclude Include="EventWaitHandle.hpp">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoResetEvent.hpp">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="ManualResetEvent.hpp">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Connection.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DataReceivedEventArgs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -138,9 +138,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ConnectionStatistics.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ConnectionListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NewConnectionEventArgs.cpp">
@@ -214,6 +211,18 @@
     </ClCompile>
     <ClCompile Include="Util.cpp">
       <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="EventWaitHandle.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoResetEvent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ManualResetEvent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkConnection.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -36,10 +36,10 @@ namespace Hazel
 		std::map<ushort, FragmentedMessage> fragmented_messages_received;
 		std::mutex fragmented_messages_received_mutex;
 
-		void FragmentedSend(Bytes data);
+		void FragmentedSend(Bytes &data);
 		FragmentedMessage GetFragmentedMessage(ushort message_id);
-		void FragmentedStartMessageReceive(Bytes buffer);
-		void FragmentedMessageReceive(Bytes buffer);
+		void FragmentedStartMessageReceive(Bytes &buffer);
+		void FragmentedMessageReceive(Bytes &buffer);
 		void FinalizeFragmentedMessage(FragmentedMessage &message);
 
 		//Reliable
@@ -59,20 +59,20 @@ namespace Hazel
 		std::atomic_int resends_before_disconnect = 3;
 
 		template<typename ...Args>
-		void AttachReliableID(Bytes buffer, int offset, std::function<void(Args...)> &ack_callback = std::function<void(Args...)>(), ...); // is ackCallback of type std::function<void()>? or do i need params?
+		void AttachReliableID(Bytes &buffer, int offset, std::function<void(Args...)> &ack_callback = std::function<void(Args...)>(), ...); // is ackCallback of type std::function<void()>? or do i need params?
 
 		template<typename ...Args>
-		void ReliableSend(byte send_option, Bytes data, std::function<void(Args...)> &ack_callback = std::function<void(Args...)>(), ...);
+		void ReliableSend(byte send_option, Bytes &data, std::function<void(Args...)> &ack_callback = std::function<void(Args...)>(), ...);
 
-		void ReliableMessageReceive(Bytes buffer);
-		bool ProcessReliableReceive(Bytes bytes, int offset);
-		void AcknowledgementMessageReceive(Bytes bytes);
+		void ReliableMessageReceive(Bytes &buffer);
+		bool ProcessReliableReceive(Bytes &bytes, int offset);
+		void AcknowledgementMessageReceive(Bytes &bytes);
 		void SendAck(byte byte1, byte byte2);
 
 		//Udp Connection 
-		void UnreliableSend(Bytes data, byte send_option);
+		void UnreliableSend(Bytes &data, byte send_option);
 
-		void InvokeDataReceived(SendOption send_option, Bytes buffer, int data_offset);
+		void InvokeDataReceived(SendOption send_option, Bytes &buffer, int data_offset);
 	public:
 		UdpConnection();
 
@@ -94,23 +94,23 @@ namespace Hazel
 
 		//Udp Connection
 
-		void SendBytes(Bytes bytes, SendOption send_option = SendOption::None) override;
+		void SendBytes(Bytes &bytes, SendOption send_option = SendOption::None) override;
 
 		virtual void HandleDisconnect(HazelException &e = HazelException()) = 0;
 
-		void HandleReceive(Bytes buffer);
+		void HandleReceive(Bytes &buffer);
 
 		void Stop();
 
 	protected:
 		//Udp Connection
-		virtual void WriteBytesToConnection(Bytes bytes) = 0;
+		virtual void WriteBytesToConnection(Bytes &bytes) = 0;
 
 		template<typename ...Args>
-		void HandleSend(Bytes data, byte send_option, std::function<void(Args...)> &ack_callback = std::function<void(Args...)>(), ...);
+		void HandleSend(Bytes &data, byte send_option, std::function<void(Args...)> &ack_callback = std::function<void(Args...)>(), ...);
 
 		template<typename ...Args>
-		void SendHello(Bytes bytes, std::function<void(Args...)> &acknowledge_callback, ...);
+		void SendHello(Bytes &bytes, std::function<void(Args...)> &acknowledge_callback, ...);
 
 		void SendDisconnect();
 	};

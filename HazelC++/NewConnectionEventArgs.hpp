@@ -19,10 +19,10 @@ namespace Hazel
 		NewConnectionEventArgs();
 		~NewConnectionEventArgs();
 
-		Bytes GetHandshakeData();
+		Bytes &GetHandshakeData();
 		NetworkConnection *GetConnection();
 		static NewConnectionEventArgs &GetObject();
 
-		void Set(Bytes handshake_data, NetworkConnection *connection);
+		void Set(Bytes &handshake_data, NetworkConnection *connection);
 	};
 }

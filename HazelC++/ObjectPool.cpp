@@ -16,7 +16,7 @@ namespace Hazel
 				return pool.pop();
 		};
 
-		lock(pool_mutex, fn)
+		lock_mutex(pool_mutex, fn)
 
 		return object_factory();
 	}
@@ -29,7 +29,7 @@ namespace Hazel
 			pool.push(object);
 		};
 
-		lock(pool_mutex, fn)
+		lock_mutex(pool_mutex, fn)
 	}
 
 	template<class T>

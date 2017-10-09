@@ -12,13 +12,13 @@ namespace Hazel
 
 		std::mutex state_mutex;
 
-		void WriteBytesToConnection(Bytes bytes) override;
+		void WriteBytesToConnection(Bytes &bytes) override;
 	public:
-		UdpServerConnection(UdpConnectionListener *listener, NetworkEndPoint endpoint);
+		UdpServerConnection(UdpConnectionListener *listener, NetworkEndPoint &endpoint);
 
 		UdpConnectionListener *GetListener();
 
-		void Connect(Bytes bytes = Bytes(nullptr, -1), int timeout = 5000) override;
+		void Connect(Bytes &bytes = Bytes(nullptr, -1), int timeout = 5000) override;
 
 	protected:
 		void HandleDisconnect(HazelException &e = HazelException()) override;

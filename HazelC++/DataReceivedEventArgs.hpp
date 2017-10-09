@@ -26,6 +26,6 @@ namespace Hazel
 		SendOption GetSendOption();
 		static DataReceivedEventArgs &GetObject(); // reference to the object taken from the pool
 
-		void Set(Bytes bytes, SendOption send_option);
+		void Set(Bytes &bytes, SendOption send_option);
 	};
 }

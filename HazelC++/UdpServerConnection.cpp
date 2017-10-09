@@ -8,7 +8,7 @@ namespace Hazel
 		return listener;
 	}
 
-	UdpServerConnection::UdpServerConnection(UdpConnectionListener *listener, NetworkEndPoint endpoint)
+	UdpServerConnection::UdpServerConnection(UdpConnectionListener *listener, NetworkEndPoint &endpoint)
 	{
 		this->listener = listener;
 		SetEndPoint(endpoint);
@@ -16,7 +16,7 @@ namespace Hazel
 		SetState(ConnectionState::Connected);
 	}
 
-	void UdpServerConnection::WriteBytesToConnection(Bytes bytes)
+	void UdpServerConnection::WriteBytesToConnection(Bytes &bytes)
 	{
 		auto fn = [this]()
 		{
@@ -28,10 +28,10 @@ namespace Hazel
 			//listener->SendData(bytes, GetEndpoint());
 		};
 
-		lock(state_mutex, fn)
+		lock_mutex(state_mutex, fn)
 	}
 
-	void UdpServerConnection::Connect(Bytes bytes, int timeout)
+	void UdpServerConnection::Connect(Bytes &bytes, int timeout)
 	{
 		throw HazelException("Cannot manually connect a UdpServerConnection, did you mean to use UdpClientConnection?");
 	}
@@ -44,13 +44,13 @@ namespace Hazel
 				SetState(ConnectionState::Disconnecting);
 		};
 
-		lock(state_mutex, fn)
+		lock_mutex(state_mutex, fn)
 
-			if (e.ShouldHandle())
-			{
-				InvokeDisconnected(e);
-				Close();
-			}
+		if (e.ShouldHandle())
+		{
+			InvokeDisconnected(e);
+			Close();
+		}
 	}
 
 	void UdpServerConnection::Disconnect()
@@ -64,7 +64,7 @@ namespace Hazel
 			SetState(ConnectionState::NotConnected);
 		};
 
-		lock(state_mutex, fn)
+		lock_mutex(state_mutex, fn)
 	}
 
 	void UdpServerConnection::Close()
@@ -78,6 +78,6 @@ namespace Hazel
 			SetState(ConnectionState::NotConnected);
 		};
 
-		lock(state_mutex, fn);
+		lock_mutex(state_mutex, fn);
 	}
 }

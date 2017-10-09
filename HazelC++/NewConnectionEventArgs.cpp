@@ -17,7 +17,7 @@ namespace Hazel
 		object_pool.PutObject(*this);
 	}
 
-	Bytes NewConnectionEventArgs::GetHandshakeData()
+	Bytes &NewConnectionEventArgs::GetHandshakeData()
 	{
 		return handshake_data;
 	}
@@ -32,7 +32,7 @@ namespace Hazel
 		return object_pool.GetObject();
 	}
 
-	void NewConnectionEventArgs::Set(Bytes handshake_data, NetworkConnection *connection)
+	void NewConnectionEventArgs::Set(Bytes &handshake_data, NetworkConnection *connection)
 	{
 		this->handshake_data = handshake_data;
 		this->connection = connection;

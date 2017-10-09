@@ -11,11 +11,11 @@ namespace Hazel
 				//throw new InvalidOperationException("Cannot connect as the Connection is already connected.");
 			}
 
-			SetEndPoint(end_point);
+			SetEndPoint(const_cast<NetworkEndPoint&>(end_point));
 
 			SetState(ConnectionState::Connected);
 		};
 
-		lock(socket_mutex, fn)
+		lock_mutex(socket_mutex, fn)
 	}
 }

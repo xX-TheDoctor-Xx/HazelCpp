@@ -4,11 +4,11 @@
 
 namespace Hazel
 {
-	UdpClientConnection::UdpClientConnection(NetworkEndPoint remote_end_point, IPMode mode) : data_buffer(new byte[65535], 65535), mode(mode), UdpSocket()
+	UdpClientConnection::UdpClientConnection(NetworkEndPoint &remote_end_point, IPMode mode) : data_buffer(new byte[65535], 65535), mode(mode), UdpSocket()
 	{
 		auto fn = [this, remote_end_point]()
 		{
-			SetEndPoint(remote_end_point);
+			SetEndPoint(const_cast<NetworkEndPoint&>(remote_end_point));
 
 			if (remote_end_point.is_v4())
 			{
@@ -21,7 +21,7 @@ namespace Hazel
 			}
 		};
 
-		lock(socket_mutex, fn)
+		lock_mutex(socket_mutex, fn)
 	}
 
 	void write_bytes_to_connection_callback(UdpClientConnection *con)
@@ -33,7 +33,7 @@ namespace Hazel
 				//con->EndSendTo();
 			};
 
-			lock(con->socket_mutex, fn);
+			lock_mutex(con->socket_mutex, fn);
 		}
 		catch (SocketException&)
 		{
@@ -41,7 +41,7 @@ namespace Hazel
 		}
 	}
 
-	void UdpClientConnection::WriteBytesToConnection(Bytes bytes)
+	void UdpClientConnection::WriteBytesToConnection(Bytes &bytes)
 	{
 		auto fn = [this, bytes]()
 		{
@@ -60,7 +60,7 @@ namespace Hazel
 			}
 		};
 
-		lock(socket_mutex, fn)
+		lock_mutex(socket_mutex, fn)
 	}
 
 	void hello_func(UdpClientConnection *con)
@@ -70,10 +70,10 @@ namespace Hazel
 			con->SetState(ConnectionState::Connected);
 		};
 
-		lock(con->socket_mutex, fn)
+		lock_mutex(con->socket_mutex, fn)
 	}
 
-	void UdpClientConnection::Connect(Bytes bytes, int timeout)
+	void UdpClientConnection::Connect(Bytes &bytes, int timeout)
 	{
 		auto fn = [this, bytes, timeout]()
 		{
@@ -105,7 +105,7 @@ namespace Hazel
 				throw HazelException("A Socket exception occured while initiating a receive operation.");
 			}
 
-			SendHello(bytes, std::function<void(UdpClientConnection*)>(hello_func), this);
+			SendHello(const_cast<Bytes&>(bytes), std::function<void(UdpClientConnection*)>(hello_func), this);
 
 			if (!WaitOnConnect(timeout))
 			{
@@ -114,7 +114,7 @@ namespace Hazel
 			}
 		};
 
-		lock(socket_mutex, fn)
+		lock_mutex(socket_mutex, fn)
 	}
 
 	void UdpClientConnection::HandleDisconnect(HazelException &e)
@@ -130,7 +130,7 @@ namespace Hazel
 			}
 		};
 
-		lock(socket_mutex, fn)
+		lock_mutex(socket_mutex, fn)
 
 		if (invoke)
 		{
@@ -150,7 +150,7 @@ namespace Hazel
 			UdpSocket::close();
 		};
 
-		lock(socket_mutex, fn)
+		lock_mutex(socket_mutex, fn)
 	}
 
 	void read_callback(UdpClientConnection *con, Bytes &bytes, bool has_error)
@@ -164,7 +164,7 @@ namespace Hazel
 				//const_cast<long&>(bytes_received) = con->EndReceiveFrom();
 			};
 
-			lock(con->socket_mutex, fn);
+			lock_mutex(con->socket_mutex, fn);
 		}
 		catch (SocketException&)
 		{
@@ -200,6 +200,6 @@ namespace Hazel
 
 		};
 
-		lock(socket_mutex, fn)
+		lock_mutex(socket_mutex, fn)
 	}
 }

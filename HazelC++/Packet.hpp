@@ -35,7 +35,7 @@ namespace Hazel
 
 		~Packet();
 
-		void Set(Bytes data, UdpConnection *con, std::function<void(UdpConnection*, Packet&)> &resend_action, int timeout, std::function<void()> &ack_callback);
+		void Set(Bytes &data, UdpConnection *con, std::function<void(UdpConnection*, Packet&)> &resend_action, int timeout, std::function<void()> &ack_callback);
 		Bytes GetData();
 		int GetLastTimeout();
 		void IncrementLastTimeout(int value);

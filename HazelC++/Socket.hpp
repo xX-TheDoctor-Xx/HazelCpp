@@ -58,11 +58,21 @@
 #include "HazelException.hpp"
 #include "Bytes.hpp"
 #include "NetworkEndPoint.hpp"
+#include "NetworkConnection.hpp"
+
+#include <future>
 
 namespace Hazel
 {
+	template<typename ...Args>
+	long send_to_lock(NetworkConnection *soc, std::mutex & mutex, const void * data, size_t datasize, NetworkEndPoint & ip, std::function<void(NetworkConnection*)> &callback);
+
 	class Socket
 	{
+		friend class NetworkConnection;
+
+		friend long send_to_lock(NetworkConnection *soc, std::mutex & mutex, const void * data, size_t datasize, NetworkEndPoint & ip, std::function<void(NetworkConnection*)> &callback);
+
 	public:
 		Socket();
 		Socket(SOCKET id);
@@ -129,6 +139,11 @@ namespace Hazel
 
 		bool connect(int timeout);
 
+		template<typename ...Args>
+		void BeginSendToLock(NetworkConnection *connection, const void* data, size_t datasize, NetworkEndPoint & ip, std::function<void(NetworkConnection*)> &callback);
+
+		long EndSendTo();
+
 	protected:
 		long analyze_error(long fn_return) const;
 
@@ -137,6 +152,8 @@ namespace Hazel
 		static std::string syserr_text(long err);
 
 	private:
+		std::future<long> send_to_future;
+
 		SOCKET id_;
 		NetworkEndPoint ip_;
 		long errno_;

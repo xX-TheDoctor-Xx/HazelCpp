@@ -121,16 +121,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AutoResetEvent.hpp" />
     <ClInclude Include="Bytes.hpp" />
-    <ClInclude Include="Connection.hpp" />
-    <ClInclude Include="ConnectionListener.hpp" />
     <ClInclude Include="ConnectionStatistics.hpp" />
     <ClInclude Include="DataReceivedEventArgs.hpp" />
     <ClInclude Include="DisconnectedEventArgs.hpp" />
+    <ClInclude Include="EventWaitHandle.hpp" />
     <ClInclude Include="Fragment.hpp" />
     <ClInclude Include="FragmentedMessages.hpp" />
     <ClInclude Include="Hazel.hpp" />
     <ClInclude Include="HazelException.hpp" />
+    <ClInclude Include="ManualResetEvent.hpp" />
     <ClInclude Include="NetworkConnection.hpp" />
     <ClInclude Include="NetworkConnectionListener.hpp" />
     <ClInclude Include="NetworkEndPoint.hpp" />
@@ -154,15 +155,17 @@
     <ClInclude Include="Util.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AutoResetEvent.cpp" />
+    <ClCompile Include="EventWaitHandle.cpp" />
     <ClCompile Include="HazelException.cpp" />
     <ClCompile Include="Bytes.cpp" />
-    <ClCompile Include="Connection.cpp" />
-    <ClCompile Include="ConnectionListener.cpp" />
     <ClCompile Include="ConnectionStatistics.cpp" />
     <ClCompile Include="DataReceivedEventArgs.cpp" />
     <ClCompile Include="DisconnectedEventArgs.cpp" />
     <ClCompile Include="Fragment.cpp" />
     <ClCompile Include="Hazel.cpp" />
+    <ClCompile Include="ManualResetEvent.cpp" />
+    <ClCompile Include="NetworkConnection.cpp" />
     <ClCompile Include="NetworkConnectionListener.cpp" />
     <ClCompile Include="NetworkEndPoint.cpp" />
     <ClCompile Include="NewConnectionEventArgs.cpp" />

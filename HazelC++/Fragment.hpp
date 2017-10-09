@@ -12,7 +12,7 @@ namespace Hazel
 		Bytes Data;
 		int Offset;
 
-		Fragment(int fragment_id, Bytes data, int offset);
+		Fragment(int fragment_id, Bytes &data, int offset);
 
 		bool operator<(Fragment &other);
 	};

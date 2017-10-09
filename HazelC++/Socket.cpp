@@ -2,10 +2,6 @@
 #include "SocketException.hpp"
 #include "Stopwatch.hpp"
 
-#undef lock
-#include <future>
-#include <mutex>
-
 namespace Hazel
 {
 	Socket::Socket() : id_(INVALID_SOCKET), errno_(0), timeout_(100), checksent_(false), listens_(false)
@@ -422,6 +418,34 @@ namespace Hazel
 		while (clock.GetElapsedMilliseconds() != timeout && (ret = connect()));
 		return true;
 	}
+
+	/*will this work*/
+
+	template<typename ...Args>
+	long send_to_lock(NetworkConnection *connection, std::mutex & mutex, const void * data, size_t datasize, NetworkEndPoint & ip, std::function<void(NetworkConnection*)> &callback)
+	{
+		auto fn = [connection, data, datasize, ip]()
+		{
+			return connection->sendto(data, datasize, const_cast<NetworkEndPoint&>(ip));
+		};
+
+		lock_mutex(connection->socket_mutex, fn)
+
+		callback(connection);
+	}
+
+	template<typename ...Args>
+	void Socket::BeginSendToLock(NetworkConnection *connection, const void * data, size_t datasize, NetworkEndPoint & ip, std::function<void(NetworkConnection*)> &callback)
+	{
+		send_to_future = std::async(std::launch::async, send_to_lock, connection, mutex, data, datasize, ip, callback);
+	}
+
+	long Socket::EndSendTo()
+	{
+		return send_to_future.get();
+	}
+
+	/*testing area above*/
 
 	long Socket::analyze_error(long fn_return) const
 	{

@@ -19,7 +19,7 @@ namespace Hazel
 
 		try
 		{
-			lock(listener_mutex, fn)
+			lock_mutex(listener_mutex, fn)
 		}
 		catch (SocketException&)
 		{
@@ -70,12 +70,12 @@ namespace Hazel
 				if (const_cast<Bytes&>(buffer)[0] != (byte)UdpSendOption::Hello)
 					return;
 
-				nonconst_connection = new UdpServerConnection(listener, remote_end_point);
+				nonconst_connection = new UdpServerConnection(const_cast<UdpConnectionListener*>(listener), const_cast<NetworkEndPoint&>(remote_end_point));
 				nonconst_connections.emplace(nonconst_connections.size(), std::make_pair(remote_end_point, nonconst_connection)); // idk if this will work
 			}
 		};
 
-		lock(listener->connections_mutex, fn)
+		lock_mutex(listener->connections_mutex, fn)
 
 		connection->HandleReceive(buffer);
 
@@ -96,7 +96,7 @@ namespace Hazel
 
 		try
 		{
-			lock(listener_mutex, fn);
+			lock_mutex(listener_mutex, fn);
 		}
 		catch (SocketException&)
 		{
@@ -115,7 +115,7 @@ namespace Hazel
 				//Socket::BeginSendTo(const_cast<Bytes&>(bytes), const_cast<NetworkEndPoint&>(end_point), func, this);
 			};
 
-			lock(listener_mutex, fn)
+			lock_mutex(listener_mutex, fn)
 		}
 		catch (SocketException&)
 		{
@@ -132,7 +132,7 @@ namespace Hazel
 				connections.erase(index);
 		};
 
-		lock(connections_mutex, fn)
+		lock_mutex(connections_mutex, fn)
 	}
 
 	void UdpConnectionListener::Close()
@@ -142,6 +142,6 @@ namespace Hazel
 			UdpSocket::close();
 		};
 
-		lock(listener_mutex, fn)
+		lock_mutex(listener_mutex, fn)
 	}
 }

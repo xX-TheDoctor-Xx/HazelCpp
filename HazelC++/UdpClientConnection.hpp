@@ -19,20 +19,19 @@ namespace Hazel
 		friend void write_bytes_to_connection_callback(UdpClientConnection *con);
 		friend void hello_func(UdpClientConnection *con);
 		
-		std::mutex socket_mutex;
 		Bytes data_buffer;
 		IPMode mode;
 
 		void StartListeningForData();
 
 	public:
-		UdpClientConnection(NetworkEndPoint remote_end_point, IPMode mode);
-		void Connect(Bytes bytes = Bytes(nullptr, -1), int timeout = 5000) override;
+		UdpClientConnection(NetworkEndPoint &remote_end_point, IPMode mode);
+		void Connect(Bytes &bytes = Bytes(nullptr, -1), int timeout = 5000) override;
 
 		void HandleDisconnect(HazelException &e) override;
 
 	protected:
-		void WriteBytesToConnection(Bytes bytes) override;
+		void WriteBytesToConnection(Bytes &bytes) override;
 		void Close();
 	};
 }

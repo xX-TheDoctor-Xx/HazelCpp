@@ -34,7 +34,7 @@ namespace Hazel
 		return send_option;
 	}
 
-	void DataReceivedEventArgs::Set(Bytes bytes, SendOption send_option)
+	void DataReceivedEventArgs::Set(Bytes &bytes, SendOption send_option)
 	{
 		this->bytes = bytes;
 		this->send_option = send_option;
