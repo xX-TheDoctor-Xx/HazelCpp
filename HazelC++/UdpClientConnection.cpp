@@ -4,7 +4,7 @@
 
 namespace Hazel
 {
-	UdpClientConnection::UdpClientConnection(NetworkEndPoint remote_end_point) : data_buffer(new byte[65535], 65535), UdpSocket()
+	UdpClientConnection::UdpClientConnection(NetworkEndPoint remote_end_point, IPMode mode) : data_buffer(new byte[65535], 65535), mode(mode), UdpSocket()
 	{
 		auto fn = [this, remote_end_point]()
 		{
@@ -50,7 +50,7 @@ namespace Hazel
 
 			try
 			{
-
+				//con->SendToAsync();
 			}
 			catch (SocketException&)
 			{
@@ -78,13 +78,16 @@ namespace Hazel
 		auto fn = [this, bytes, timeout]()
 		{
 			if (GetState() != ConnectionState::NotConnected)
-				throw HazelException("Cannot connect as the Connection is already connected.");
+				throw HazelException("Cannot connect as the Connection is already connected or connecting.");
 
 			SetState(ConnectionState::Connecting);
 
 			try
 			{
-				UdpSocket::bind(std::string("0.0.0.0:0"));
+				if (mode == IPMode::IPv4)
+					UdpSocket::bind(std::string("0.0.0.0:0"));
+				else
+					UdpSocket::bind(std::string("[::]:0"));
 			}
 			catch (HazelException&)
 			{

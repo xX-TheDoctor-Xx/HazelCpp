@@ -100,6 +100,8 @@ namespace Hazel
 
 		void HandleReceive(Bytes buffer);
 
+		void Stop();
+
 	protected:
 		//Udp Connection
 		virtual void WriteBytesToConnection(Bytes bytes) = 0;

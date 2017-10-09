@@ -10,21 +10,23 @@ namespace Hazel
 	class UdpClientConnection;
 
 	void read_callback(UdpClientConnection *con, Bytes &bytes, bool has_error);
+	void write_bytes_to_connection_callback(UdpClientConnection *con);
+	void hello_func(UdpClientConnection *con);
 
-	class UdpClientConnection : public UdpConnection, public UdpSocket
+	class UdpClientConnection : public UdpConnection, protected UdpSocket
 	{
 		friend void read_callback(UdpClientConnection *con, Bytes &bytes, bool has_error);
-
-	public:
+		friend void write_bytes_to_connection_callback(UdpClientConnection *con);
+		friend void hello_func(UdpClientConnection *con);
+		
 		std::mutex socket_mutex;
-
-	private:
 		Bytes data_buffer;
+		IPMode mode;
 
 		void StartListeningForData();
 
 	public:
-		UdpClientConnection(NetworkEndPoint remote_end_point);
+		UdpClientConnection(NetworkEndPoint remote_end_point, IPMode mode);
 		void Connect(Bytes bytes = Bytes(nullptr, -1), int timeout = 5000) override;
 
 		void HandleDisconnect(HazelException &e) override;

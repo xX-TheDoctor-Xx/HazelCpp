@@ -13,5 +13,7 @@ namespace Hazel
 		int Offset;
 
 		Fragment(int fragment_id, Bytes data, int offset);
+
+		bool operator<(Fragment &other);
 	};
 }

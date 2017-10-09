@@ -20,7 +20,7 @@ namespace Hazel
 		static void ActualTimer(Timer *timer, ...);
 
 	public:
-		std::function<void(Args...)> callback;
+		std::function<void(Args...)> Callback;
 
 		Timer();
 

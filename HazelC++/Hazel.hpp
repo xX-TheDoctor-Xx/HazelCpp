@@ -87,5 +87,11 @@ namespace Hazel
 		Udp = SOCK_DGRAM 
 	};
 
+	enum class IPMode
+	{
+		IPv4,
+		IPv6
+	};
+
 	#define lock(x, fn) std::lock_guard<std::mutex> *lock = new std::lock_guard<std::mutex>(x); fn(); delete lock;
 }

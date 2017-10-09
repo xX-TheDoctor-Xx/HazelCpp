@@ -69,57 +69,23 @@ namespace Hazel
 		bool TcpReuseAddress;
 
 	public:
-		TcpServer() : TcpSocket(), max_clients_(64), max_listen_pending_(64), TcpNoDelay(true), TcpReuseAddress(true) { }
-		virtual ~TcpServer() { stop(); }
+		TcpServer();
+		virtual ~TcpServer();
 
-		bool start()
-		{
-			return TcpSocket::listen(TcpSocket::ip(), TcpReuseAddress, TcpNoDelay, max_listen_pending_);
-		}
+		bool start();
 
-		unsigned int max_clients() const throw()
-		{
-			return max_clients_;
-		}
+		unsigned int max_clients() const throw();
 
-		void max_clients(unsigned int n) throw()
-		{
-			max_clients_ = n;
-		}
+		void max_clients(unsigned int n) throw();
 
-		int max_clients_pending() const
-		{
-			return max_listen_pending_;
-		}
-		void max_clients_pending(int n)
-		{
-			max_listen_pending_ = n > 2 ? n : 2;
-		}
+		int max_clients_pending() const;
+		void max_clients_pending(int n);
 
-		void stop()
-		{
-			if (!TcpSocket::closed())
-			{
-				max_clients_ = 0;
-				TcpSocket::close();
-			}
-		}
+		void stop();
 
-		bool running() const
-		{
-			return !TcpSocket::closed();
-		}
+		bool running() const;
 
-		TcpClient *accept()
-		{
-			if (TcpSocket::closed()) return nullptr;
-			TcpClient client;
-			if (TcpSocket::accept(client)) 
-			{
-				client.nodelay(true);
-				return &client;
-			}
-		}
+		TcpClient *accept();
 
 	private:
 		bool connect(const NetworkEndPoint & ip_addr);

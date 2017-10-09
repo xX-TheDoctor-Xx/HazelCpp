@@ -32,7 +32,7 @@ namespace Hazel
 		this->data = data;
 
 		timer.SetInterval(timeout); // i dont think this is right
-		timer.callback = resend_action;
+		timer.Callback = resend_action;
 		timer.Start(con, *this);
 
 		last_timeout = timeout;

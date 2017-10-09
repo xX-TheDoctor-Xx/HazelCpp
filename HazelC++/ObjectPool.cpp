@@ -10,11 +10,13 @@ namespace Hazel
 	template<class T>
 	T &ObjectPool<T>::GetObject()
 	{
-		lock(pool_mutex)
+		auto fn = [this]()
 		{
 			if (pool.size() > 0)
 				return pool.pop();
-		}
+		};
+
+		lock(pool_mutex, fn)
 
 		return object_factory();
 	}
@@ -22,10 +24,12 @@ namespace Hazel
 	template<class T>
 	void ObjectPool<T>::PutObject(T &object)
 	{
-		lock(pool_mutex)
+		auto fn = [this]()
 		{
 			pool.push(object);
-		}
+		};
+
+		lock(pool_mutex, fn)
 	}
 
 	template<class T>
