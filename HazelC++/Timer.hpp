@@ -18,6 +18,7 @@ namespace Hazel
 		bool stop;
 
 		static void ActualTimer(Timer *timer, ...);
+		static void TimerMethod(Timer<Args...> *timer, ...);
 
 	public:
 		std::function<void(Args...)> Callback;

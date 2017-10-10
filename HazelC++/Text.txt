@@ -6,7 +6,7 @@ finish TcpConnection
 
 check if GenericFunction works
 
-Cant get ManualResetEvent right mhhhhhhhhhhh
+Test EventWait Handler
 
 implement error codes?
 

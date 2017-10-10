@@ -39,6 +39,9 @@ typedef unsigned char byte;
 typedef unsigned short ushort;
 typedef unsigned long ulong;
 
+template<typename ...Args>
+std::function<void(Args...)> empty_fn;
+
 namespace Hazel
 {
 	class HazelInit
@@ -93,5 +96,5 @@ namespace Hazel
 		IPv6
 	};
 
-	#define lock_mutex(x, fn) { std::lock_guard<std::mutex> *lock = new std::lock_guard<std::mutex>(x); fn(); delete lock; }
+	#define lock_mutex(x, fn) { std::lock_guard<std::mutex> lock(x) fn(); }
 }

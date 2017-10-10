@@ -59,10 +59,10 @@ namespace Hazel
 		std::atomic_int resends_before_disconnect = 3;
 
 		template<typename ...Args>
-		void AttachReliableID(Bytes &buffer, int offset, std::function<void(Args...)> &ack_callback = std::function<void(Args...)>(), ...); // is ackCallback of type std::function<void()>? or do i need params?
+		void AttachReliableID(Bytes &buffer, int offset, std::function<void(Args...)> &ack_callback = empty_fn<Args...>, ...); // is ackCallback of type std::function<void()>? or do i need params?
 
 		template<typename ...Args>
-		void ReliableSend(byte send_option, Bytes &data, std::function<void(Args...)> &ack_callback = std::function<void(Args...)>(), ...);
+		void ReliableSend(byte send_option, Bytes &data, std::function<void(Args...)> &ack_callback = empty_fn<Args...>, ...);
 
 		void ReliableMessageReceive(Bytes &buffer);
 		bool ProcessReliableReceive(Bytes &bytes, int offset);
@@ -107,7 +107,7 @@ namespace Hazel
 		virtual void WriteBytesToConnection(Bytes &bytes) = 0;
 
 		template<typename ...Args>
-		void HandleSend(Bytes &data, byte send_option, std::function<void(Args...)> &ack_callback = std::function<void(Args...)>(), ...);
+		void HandleSend(Bytes &data, byte send_option, std::function<void(Args...)> &ack_callback = empty_fn<Args...>, ...);
 
 		template<typename ...Args>
 		void SendHello(Bytes &bytes, std::function<void(Args...)> &acknowledge_callback, ...);

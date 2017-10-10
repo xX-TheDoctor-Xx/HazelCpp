@@ -55,13 +55,18 @@ namespace Hazel
 		callback = 0;
 	}
 
+	template<typename ...Args>
+	void Timer<Args...>::TimerMethod(Timer<Args...> *timer, ...)
+	{
+		timer->callback(...);
+		std::this_thread::sleep_for(std::chrono::milliseconds(timer->interval));
+		if (!timer->stop)
+			TimerMethod(timer, ...);
+	}
+
 	template<typename... Args>
 	void Timer<Args...>::ActualTimer(Timer * timer, ...)
 	{
-		while (!timer->stop)
-		{
-			timer->callback(...); 
-			std::this_thread::sleep_for(std::chrono::milliseconds(timer->interval));
-		}
+		TimerMethod(timer, ...);
 	}
 }
