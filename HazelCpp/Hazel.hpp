@@ -1,37 +1,8 @@
 #pragma once
 
-#undef min
-#undef max
+#include "Defines.hpp"
 
-#include <mutex>
-
-#ifdef _WIN32
-
-#pragma comment(lib, "ws2_32.lib")
-#include <WinSock2.h>
-#include <WS2tcpip.h>
-
-#define SOCKET_ERRNO ((long)(::WSAGetLastError()))
-
-#undef GetObject
-
-#else
-
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-
-typedef int SOCKET;
-
-void closesocket(SOCKET socket)
-{
-	close(socket);
-}
-
-#define SOCKET_ERROR (-1)
-#define SOCKET_ERRNO (errno)
-
-#endif
+#include <functional>
 
 #define MSG_DONTWAIT 0
 
@@ -44,15 +15,6 @@ std::function<void(Args...)> empty_fn;
 
 namespace Hazel
 {
-	class HazelInit
-	{
-		static bool initialized;
-
-	public:
-		static bool Initialize();
-		static void Cleanup();
-	};
-
 	enum class SendOption
 	{
 		None,
@@ -95,7 +57,4 @@ namespace Hazel
 		IPv4,
 		IPv6
 	};
-
-	#define lock_mutex(x, fn) { std::lock_guard<std::mutex> lock(x); fn(); }
-#define lock_mutex_return(x, fn) { std::lock_guard<std::mutex> lock(x); return fn(); }
 }

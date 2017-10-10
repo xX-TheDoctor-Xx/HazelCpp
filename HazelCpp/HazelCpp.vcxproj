@@ -23,6 +23,7 @@
     <ProjectGuid>{5B9967D7-C210-4D7C-905F-0778DA500A1D}</ProjectGuid>
     <RootNamespace>HazelC</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <ProjectName>HazelCpp</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -77,12 +78,11 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_MBCS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Util\Util</AdditionalIncludeDirectories>
       <AdditionalOptions>/std:c++latest %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>ws2_32.lib;</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;F:\Util\Debug\Util.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
     </Lib>
@@ -121,71 +121,59 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AutoResetEvent.hpp" />
-    <ClInclude Include="Bytes.hpp" />
     <ClInclude Include="ConnectionStatistics.hpp" />
     <ClInclude Include="DataReceivedEventArgs.hpp" />
     <ClInclude Include="DisconnectedEventArgs.hpp" />
-    <ClInclude Include="EventWaitHandle.hpp" />
     <ClInclude Include="Fragment.hpp" />
     <ClInclude Include="FragmentedMessages.hpp" />
     <ClInclude Include="Hazel.hpp" />
     <ClInclude Include="HazelException.hpp" />
-    <ClInclude Include="ManualResetEvent.hpp" />
     <ClInclude Include="NetworkConnection.hpp" />
     <ClInclude Include="NetworkConnectionListener.hpp" />
     <ClInclude Include="NetworkEndPoint.hpp" />
     <ClInclude Include="NewConnectionEventArgs.hpp" />
-    <ClInclude Include="ObjectPool.hpp" />
     <ClInclude Include="Packet.hpp" />
     <ClInclude Include="Socket.hpp" />
     <ClInclude Include="SocketException.hpp" />
     <ClInclude Include="StateObject.hpp" />
-    <ClInclude Include="Stopwatch.hpp" />
     <ClInclude Include="TcpClient.hpp" />
     <ClInclude Include="TcpConnection.hpp" />
     <ClInclude Include="TcpServer.hpp" />
     <ClInclude Include="TcpSocket.hpp" />
-    <ClInclude Include="Timer.hpp" />
     <ClInclude Include="UdpClientConnection.hpp" />
     <ClInclude Include="UdpConnection.hpp" />
     <ClInclude Include="UdpConnectionListener.hpp" />
     <ClInclude Include="UdpServerConnection.hpp" />
     <ClInclude Include="UdpSocket.hpp" />
-    <ClInclude Include="Util.hpp" />
+    <ClInclude Include="HazelUtil.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AutoResetEvent.cpp" />
-    <ClCompile Include="EventWaitHandle.cpp" />
     <ClCompile Include="HazelException.cpp" />
-    <ClCompile Include="Bytes.cpp" />
     <ClCompile Include="ConnectionStatistics.cpp" />
     <ClCompile Include="DataReceivedEventArgs.cpp" />
     <ClCompile Include="DisconnectedEventArgs.cpp" />
     <ClCompile Include="Fragment.cpp" />
     <ClCompile Include="Hazel.cpp" />
-    <ClCompile Include="ManualResetEvent.cpp" />
     <ClCompile Include="NetworkConnection.cpp" />
     <ClCompile Include="NetworkConnectionListener.cpp" />
     <ClCompile Include="NetworkEndPoint.cpp" />
     <ClCompile Include="NewConnectionEventArgs.cpp" />
-    <ClCompile Include="ObjectPool.cpp" />
     <ClCompile Include="Packet.cpp" />
     <ClCompile Include="Socket.cpp" />
     <ClCompile Include="SocketException.cpp" />
     <ClCompile Include="StateObject.cpp" />
-    <ClCompile Include="Stopwatch.cpp" />
     <ClCompile Include="TcpClient.cpp" />
-    <ClCompile Include="TcpConnection.cpp" />
+    <ClCompile Include="TcpConnection.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="TcpServer.cpp" />
     <ClCompile Include="TcpSocket.cpp" />
-    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="UdpClientConnection.cpp" />
     <ClCompile Include="UdpConnection.cpp" />
     <ClCompile Include="UdpConnectionListener.cpp" />
     <ClCompile Include="UdpServerConnection.cpp" />
     <ClCompile Include="UdpSocket.cpp" />
-    <ClCompile Include="Util.cpp" />
+    <ClCompile Include="HazelUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Text.txt" />

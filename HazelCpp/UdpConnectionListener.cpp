@@ -1,6 +1,6 @@
 #include "UdpConnectionListener.hpp"
 #include "SocketException.hpp"
-#include "Util.hpp"
+#include "HazelUtil.hpp"
 
 namespace Hazel
 {
@@ -62,7 +62,7 @@ namespace Hazel
 			std::map<int, std::pair<NetworkEndPoint, UdpServerConnection*>> &nonconst_connections = const_cast<std::map<int, std::pair<NetworkEndPoint, UdpServerConnection*>>&>(((UdpConnectionListener*)(listener))->connections);
 			UdpServerConnection* nonconst_connection = const_cast<UdpServerConnection*>(connection);
 
-			int index = Util::LookForEndPoint(nonconst_connections, const_cast<NetworkEndPoint&>(remote_end_point));
+			int index = HazelUtil::LookForEndPoint(nonconst_connections, const_cast<NetworkEndPoint&>(remote_end_point));
 			const_cast<bool&>(aware) = nonconst_connections.find(index) != nonconst_connections.end();
 
 			if (aware)
@@ -135,7 +135,7 @@ namespace Hazel
 	{
 		auto fn = [this, end_point]()
 		{
-			int index = Util::LookForEndPoint(connections, const_cast<NetworkEndPoint&>(end_point));
+			int index = HazelUtil::LookForEndPoint(connections, const_cast<NetworkEndPoint&>(end_point));
 			if (index != -1)
 				connections.erase(index);
 		};

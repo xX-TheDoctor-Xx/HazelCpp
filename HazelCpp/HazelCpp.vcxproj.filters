@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\Util">
-      <UniqueIdentifier>{0aec5280-ae35-427f-9f36-9876c75cf3cc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Util">
-      <UniqueIdentifier>{17307b34-eac1-443c-bf44-5b37b43edee9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Udp">
       <UniqueIdentifier>{13515601-4b2b-4798-87bb-61621df9cbf0}</UniqueIdentifier>
     </Filter>
@@ -60,9 +54,6 @@
     <ClInclude Include="NetworkConnection.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Timer.hpp">
-      <Filter>Header Files\Util</Filter>
-    </ClInclude>
     <ClInclude Include="FragmentedMessages.hpp">
       <Filter>Header Files\Udp</Filter>
     </ClInclude>
@@ -72,9 +63,6 @@
     <ClInclude Include="Packet.hpp">
       <Filter>Header Files\Udp</Filter>
     </ClInclude>
-    <ClInclude Include="Stopwatch.hpp">
-      <Filter>Header Files\Util</Filter>
-    </ClInclude>
     <ClInclude Include="HazelException.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -82,9 +70,6 @@
       <Filter>Header Files\Udp</Filter>
     </ClInclude>
     <ClInclude Include="NetworkEndPoint.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectPool.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UdpConnectionListener.hpp">
@@ -101,21 +86,6 @@
     </ClInclude>
     <ClInclude Include="TcpConnection.hpp">
       <Filter>Header Files\Tcp</Filter>
-    </ClInclude>
-    <ClInclude Include="Bytes.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Util.hpp">
-      <Filter>Header Files\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="EventWaitHandle.hpp">
-      <Filter>Header Files\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="AutoResetEvent.hpp">
-      <Filter>Header Files\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="ManualResetEvent.hpp">
-      <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="TcpClient.hpp">
       <Filter>Header Files\Sockets</Filter>
@@ -135,6 +105,9 @@
     <ClInclude Include="SocketException.hpp">
       <Filter>Header Files\Sockets</Filter>
     </ClInclude>
+    <ClInclude Include="HazelUtil.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataReceivedEventArgs.cpp">
@@ -152,25 +125,16 @@
     <ClCompile Include="UdpConnection.cpp">
       <Filter>Source Files\Udp</Filter>
     </ClCompile>
-    <ClCompile Include="Timer.cpp">
-      <Filter>Source Files\Util</Filter>
-    </ClCompile>
     <ClCompile Include="Fragment.cpp">
       <Filter>Source Files\Udp</Filter>
     </ClCompile>
     <ClCompile Include="Packet.cpp">
       <Filter>Source Files\Udp</Filter>
     </ClCompile>
-    <ClCompile Include="Stopwatch.cpp">
-      <Filter>Source Files\Util</Filter>
-    </ClCompile>
     <ClCompile Include="UdpClientConnection.cpp">
       <Filter>Source Files\Udp</Filter>
     </ClCompile>
     <ClCompile Include="NetworkEndPoint.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjectPool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hazel.cpp">
@@ -191,26 +155,11 @@
     <ClCompile Include="TcpConnection.cpp">
       <Filter>Source Files\Tcp</Filter>
     </ClCompile>
-    <ClCompile Include="Bytes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="HazelException.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Util.cpp">
-      <Filter>Source Files\Util</Filter>
-    </ClCompile>
-    <ClCompile Include="EventWaitHandle.cpp">
-      <Filter>Source Files\Util</Filter>
-    </ClCompile>
     <ClCompile Include="NetworkConnection.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ManualResetEvent.cpp">
-      <Filter>Source Files\Util</Filter>
-    </ClCompile>
-    <ClCompile Include="AutoResetEvent.cpp">
-      <Filter>Source Files\Util</Filter>
     </ClCompile>
     <ClCompile Include="TcpClient.cpp">
       <Filter>Source Files\Sockets</Filter>
@@ -229,6 +178,9 @@
     </ClCompile>
     <ClCompile Include="UdpSocket.cpp">
       <Filter>Source Files\Sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="HazelUtil.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
