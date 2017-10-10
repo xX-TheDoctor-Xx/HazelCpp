@@ -64,14 +64,17 @@
 
 namespace Hazel
 {
-	template<typename ...Args>
-	long send_to_lock(NetworkConnection *soc, std::mutex & mutex, const void * data, size_t datasize, NetworkEndPoint & ip, std::function<void(NetworkConnection*)> &callback);
+	class Socket;
+
+	long send_to_lock(Socket *soc, const byte * data, size_t datasize, NetworkEndPoint & ip);
+
+	Bytes receive_from_lock(Socket *soc, size_t datasize, NetworkEndPoint & ip);
 
 	class Socket
 	{
-		friend class NetworkConnection;
+		friend long send_to_lock(Socket *soc, const byte * data, size_t datasize, NetworkEndPoint & ip);
 
-		friend long send_to_lock(NetworkConnection *soc, std::mutex & mutex, const void * data, size_t datasize, NetworkEndPoint & ip, std::function<void(NetworkConnection*)> &callback);
+		friend Bytes receive_from_lock(Socket *soc, size_t datasize, NetworkEndPoint & ip);
 
 	public:
 		Socket();
@@ -140,9 +143,16 @@ namespace Hazel
 		bool connect(int timeout);
 
 		template<typename ...Args>
-		void BeginSendToLock(NetworkConnection *connection, const void* data, size_t datasize, NetworkEndPoint & ip, std::function<void(NetworkConnection*)> &callback);
+		void BeginSendTo(const byte* data, size_t datasize, NetworkEndPoint & ip, std::function<void(Socket*, Args...)> &callback, ...);
 
 		long EndSendTo();
+
+		template<typename ...Args>
+		void BeginReceiveFrom(size_t datasize, NetworkEndPoint & ip, std::function<void(Socket*, Args...)> &callback, ...);
+
+		Bytes EndReceiveFrom();
+
+		std::mutex socket_mutex;
 
 	protected:
 		long analyze_error(long fn_return) const;
@@ -153,6 +163,7 @@ namespace Hazel
 
 	private:
 		std::future<long> send_to_future;
+		std::future<Bytes> receive_from_future;
 
 		SOCKET id_;
 		NetworkEndPoint ip_;

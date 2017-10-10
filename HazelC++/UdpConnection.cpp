@@ -107,17 +107,17 @@ namespace Hazel
 
 	FragmentedMessage UdpConnection::GetFragmentedMessage(ushort message_id)
 	{
-		FragmentedMessage message;
-		auto fn = [this, message, message_id]()
+		auto fn = [this, message_id]()
 		{
+			FragmentedMessage message;
 			if (fragmented_messages_received.find(message_id) != fragmented_messages_received.end())
 				const_cast<FragmentedMessage&>(message) = fragmented_messages_received.at(message_id);
 			else
 				fragmented_messages_received.insert(std::make_pair(message_id, message));
+			return message;
 		};
 
-		lock_mutex(fragmented_messages_received_mutex, fn)
-		return message;
+		lock_mutex_return(fragmented_messages_received_mutex, fn)
 	}
 
 	void UdpConnection::FragmentedStartMessageReceive(Bytes &buffer)
@@ -336,9 +336,7 @@ namespace Hazel
 			}
 		};
 
-		lock_mutex(reliable_data_packets_missing_mutex, fn)
-
-		return true;
+		lock_mutex_return(reliable_data_packets_missing_mutex, fn)
 	}
 
 	void UdpConnection::AcknowledgementMessageReceive(Bytes &bytes)

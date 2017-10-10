@@ -59,6 +59,7 @@ namespace Hazel
 			client.nodelay(true);
 			return &client;
 		}
+		return nullptr;
 	}
 
 	bool TcpServer::connect(const NetworkEndPoint & ip_addr)

@@ -4,7 +4,7 @@
 
 namespace Hazel
 {
-	UdpConnectionListener::UdpConnectionListener(NetworkEndPoint end_point) : data_buffer(new byte[65535](), 65535), UdpSocket()
+	UdpConnectionListener::UdpConnectionListener(NetworkEndPoint end_point, IPMode mode) : UdpSocket(), mode(mode)
 	{
 		SetEndPoint(end_point);
 		//this.listener.SetSocketOption(SocketOptionLevel.IPv6, (SocketOptionName)27, false);????
@@ -29,14 +29,19 @@ namespace Hazel
 		StartListeningForData();
 	}
 
-	void read_callback(UdpConnectionListener * listener, Bytes &bytes)
+	void udp_read_callback_listener(Socket *listener)
 	{
 		long bytes_received = 0;
-		NetworkEndPoint remote_end_point("0.0.0.0:0");
+		NetworkEndPoint remote_end_point;
+		if (((UdpConnectionListener*)(listener))->mode == IPMode::IPv4)
+			remote_end_point = NetworkEndPoint("0.0.0.0:0");
+		else
+			remote_end_point = NetworkEndPoint("[::]:0");
+		Bytes bytes;
 
 		try
 		{
-			listener->StartListeningForData();
+			bytes = listener->EndReceiveFrom();
 			return;
 		}
 		catch (HazelException&)
@@ -47,17 +52,14 @@ namespace Hazel
 		if (bytes_received == 0)
 			return;
 
-		Bytes buffer(new byte[bytes_received], bytes_received);
-		Util::BlockCopy(bytes.GetBytes(), 0, buffer.GetBytes(), 0, bytes_received);
-
-		listener->StartListeningForData();
+		((UdpConnectionListener*)(listener))->StartListeningForData();
 
 		bool aware;
 		UdpServerConnection *connection;
 
-		auto fn = [listener, aware, connection, remote_end_point, buffer]()
+		auto fn = [listener, aware, connection, remote_end_point, bytes]()
 		{
-			std::map<int, std::pair<NetworkEndPoint, UdpServerConnection*>> &nonconst_connections = const_cast<std::map<int, std::pair<NetworkEndPoint, UdpServerConnection*>>&>(listener->connections);
+			std::map<int, std::pair<NetworkEndPoint, UdpServerConnection*>> &nonconst_connections = const_cast<std::map<int, std::pair<NetworkEndPoint, UdpServerConnection*>>&>(((UdpConnectionListener*)(listener))->connections);
 			UdpServerConnection* nonconst_connection = const_cast<UdpServerConnection*>(connection);
 
 			int index = Util::LookForEndPoint(nonconst_connections, const_cast<NetworkEndPoint&>(remote_end_point));
@@ -67,23 +69,23 @@ namespace Hazel
 				nonconst_connection = nonconst_connections.at(index).second;
 			else
 			{
-				if (const_cast<Bytes&>(buffer)[0] != (byte)UdpSendOption::Hello)
+				if (const_cast<Bytes&>(bytes)[0] != (byte)UdpSendOption::Hello)
 					return;
 
-				nonconst_connection = new UdpServerConnection(const_cast<UdpConnectionListener*>(listener), const_cast<NetworkEndPoint&>(remote_end_point));
+				nonconst_connection = new UdpServerConnection(((UdpConnectionListener*)(listener)), const_cast<NetworkEndPoint&>(remote_end_point));
 				nonconst_connections.emplace(nonconst_connections.size(), std::make_pair(remote_end_point, nonconst_connection)); // idk if this will work
 			}
 		};
 
-		lock_mutex(listener->connections_mutex, fn)
+		lock_mutex(((UdpConnectionListener*)(listener))->connections_mutex, fn)
 
-		connection->HandleReceive(buffer);
+		connection->HandleReceive(bytes);
 
 		if (!aware)
 		{
-			Bytes new_data_buffer(new byte[buffer.GetLength() - 1], buffer.GetLength() - 1);
-			Util::BlockCopy(buffer.GetBytes(), 1, new_data_buffer.GetBytes(), 0, buffer.GetLength() - 1);
-			listener->InvokeNewConnection(new_data_buffer, connection);
+			//Bytes new_data_buffer(new byte[bytes.GetLength() - 1], bytes.GetLength() - 1);
+			//Util::BlockCopy(bytes.GetBytes(), 1, new_data_buffer.GetBytes(), 0, bytes.GetLength() - 1);
+			((UdpConnectionListener*)(listener))->InvokeNewConnection(bytes, connection);
 		}
 	}
 
@@ -91,7 +93,7 @@ namespace Hazel
 	{
 		auto fn = [this]()
 		{
-
+			BeginReceiveFrom(65535, GetEndPoint(), std::function<void(Socket*)>(udp_read_callback_listener), (Socket*)this);
 		};
 
 		try
@@ -105,14 +107,20 @@ namespace Hazel
 		}
 	}
 
+	void send_data_callback_listener(Socket *soc)
+	{
+		soc->EndSendTo();
+	}
+
 	void UdpConnectionListener::SendData(Bytes bytes, NetworkEndPoint end_point)
 	{
 		try
 		{
 			auto fn = [this, bytes, end_point]()
 			{
-				//std::function<void(UdpConnectionListener*)> func(send_data_callback);
-				//Socket::BeginSendTo(const_cast<Bytes&>(bytes), const_cast<NetworkEndPoint&>(end_point), func, this);
+				std::function<void(Socket*)> func(send_data_callback_listener);
+				Bytes &nonconst_bytes = const_cast<Bytes&>(bytes);
+				BeginSendTo(nonconst_bytes.GetBytes(), nonconst_bytes.GetLength(), const_cast<NetworkEndPoint&>(end_point), func, (Socket*)this);
 			};
 
 			lock_mutex(listener_mutex, fn)

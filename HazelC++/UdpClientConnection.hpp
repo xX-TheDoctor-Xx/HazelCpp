@@ -9,26 +9,25 @@ namespace Hazel
 {
 	class UdpClientConnection;
 
-	void read_callback(UdpClientConnection *con, Bytes &bytes, bool has_error);
-	void write_bytes_to_connection_callback(UdpClientConnection *con);
-	void hello_func(UdpClientConnection *con);
+	void udp_read_callback_client(Socket *con);
+	void udp_write_bytes_to_connection_callback(Socket *con);
+	void udp_hello_func(UdpClientConnection *con);
 
-	class UdpClientConnection : public UdpConnection, protected UdpSocket
+	class UdpClientConnection : public UdpConnection, public UdpSocket
 	{
-		friend void read_callback(UdpClientConnection *con, Bytes &bytes, bool has_error);
-		friend void write_bytes_to_connection_callback(UdpClientConnection *con);
-		friend void hello_func(UdpClientConnection *con);
-		
-		Bytes data_buffer;
-		IPMode mode;
+		friend void udp_read_callback_client(Socket *con);
+		friend void udp_write_bytes_to_connection_callback(Socket *con);
+		friend void udp_hello_func(UdpClientConnection *con);
 
-		void StartListeningForData();
+		IPMode mode;
 
 	public:
 		UdpClientConnection(NetworkEndPoint &remote_end_point, IPMode mode);
 		void Connect(Bytes &bytes = Bytes(nullptr, -1), int timeout = 5000) override;
 
 		void HandleDisconnect(HazelException &e) override;
+
+		void StartListeningForData();
 
 	protected:
 		void WriteBytesToConnection(Bytes &bytes) override;

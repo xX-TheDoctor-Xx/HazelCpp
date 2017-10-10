@@ -1,6 +1,7 @@
 #include "Socket.hpp"
 #include "SocketException.hpp"
 #include "Stopwatch.hpp"
+#include "Util.hpp"
 
 namespace Hazel
 {
@@ -421,28 +422,59 @@ namespace Hazel
 
 	/*will this work*/
 
-	template<typename ...Args>
-	long send_to_lock(NetworkConnection *connection, std::mutex & mutex, const void * data, size_t datasize, NetworkEndPoint & ip, std::function<void(NetworkConnection*)> &callback)
+	long send_to_lock(Socket *soc, const byte * data, size_t datasize, NetworkEndPoint & ip)
 	{
-		auto fn = [connection, data, datasize, ip]()
+		auto fn = [soc, data, datasize, ip]()
 		{
-			return connection->sendto(data, datasize, const_cast<NetworkEndPoint&>(ip));
+			return soc->sendto(data, datasize, const_cast<NetworkEndPoint&>(ip));
 		};
 
-		lock_mutex(connection->socket_mutex, fn)
-
-		callback(connection);
+		lock_mutex_return(soc->socket_mutex, fn)
 	}
 
 	template<typename ...Args>
-	void Socket::BeginSendToLock(NetworkConnection *connection, const void * data, size_t datasize, NetworkEndPoint & ip, std::function<void(NetworkConnection*)> &callback)
+	void Socket::BeginSendTo(const byte * data, size_t datasize, NetworkEndPoint & ip, std::function<void(Socket*, Args...)> &callback, ...)
 	{
-		send_to_future = std::async(std::launch::async, send_to_lock, connection, mutex, data, datasize, ip, callback);
+		std::thread th(callback, soc, ...);
+		send_to_future = std::async(std::launch::async, send_to_lock, this, data, datasize, ip, callback);
 	}
 
 	long Socket::EndSendTo()
 	{
+		send_to_future.wait();
 		return send_to_future.get();
+	}
+
+	/////////////////////////////
+
+	Bytes receive_from_lock(Socket *soc, size_t datasize, NetworkEndPoint & ip)
+	{
+		auto fn = [soc, datasize, ip]()
+		{
+			byte *data = new byte[datasize]();
+			auto received = soc->recvfrom(data, datasize, const_cast<NetworkEndPoint&>(ip));
+
+			byte *new_data = new byte[received]();
+			Util::BlockCopy(data, 0, new_data, 0, received);
+			delete[] data;
+
+			return Bytes(new_data, received);
+		};
+
+		lock_mutex_return(soc->socket_mutex, fn)
+	}
+
+	template<typename ...Args>
+	void Socket::BeginReceiveFrom(size_t datasize, NetworkEndPoint & ip, std::function<void(Socket*, Args...)>& callback, ...)
+	{
+		std::thread th(callback, ...);
+		receive_from_future = std::async(std::launch::async, receive_from_lock, this, bytes, ip);
+	}
+
+	Bytes Socket::EndReceiveFrom()
+	{
+		receive_from_future.wait();
+		return receive_from_future.get();
 	}
 
 	/*testing area above*/

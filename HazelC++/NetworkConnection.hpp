@@ -40,8 +40,5 @@ namespace Hazel
 		std::atomic_bool connected;
 
 		ManualResetEvent connect_wait_lock;
-
-	protected:
-		std::mutex socket_mutex;
 	};
 }

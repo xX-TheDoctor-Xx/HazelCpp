@@ -96,5 +96,6 @@ namespace Hazel
 		IPv6
 	};
 
-	#define lock_mutex(x, fn) { std::lock_guard<std::mutex> lock(x) fn(); }
+	#define lock_mutex(x, fn) { std::lock_guard<std::mutex> lock(x); fn(); }
+#define lock_mutex_return(x, fn) { std::lock_guard<std::mutex> lock(x); return fn(); }
 }
