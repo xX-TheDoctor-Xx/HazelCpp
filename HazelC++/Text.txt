@@ -19,5 +19,3 @@ i need the ability to lock mutexes in the thread
 
 
 UdpConnectionListener::read_callback this method is sooooooo messy atm
-
-when i do Util::BlockCopy to a Bytes object i am not setting the size
