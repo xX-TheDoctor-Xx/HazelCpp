@@ -46,7 +46,7 @@ namespace Hazel
 
 	bool Bytes::IsValid()
 	{
-		return GetLength() >= 0;
+		return GetLength() >= 0 && GetBytes() != nullptr;
 	}
 
 	void Bytes::Clear()

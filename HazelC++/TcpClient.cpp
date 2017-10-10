@@ -2,7 +2,11 @@
 
 namespace Hazel
 {
-	TcpClient::TcpClient() : TcpSocket() 
+	TcpClient::TcpClient(const TcpClient & client) : TcpSocket(client.socket_id())
+	{
+	}
+
+	TcpClient::TcpClient() : TcpSocket()
 	{
 	}
 

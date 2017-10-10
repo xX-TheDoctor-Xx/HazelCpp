@@ -63,6 +63,7 @@ namespace Hazel
 	{
 	public:
 		// Public forwards
+		TcpClient(const TcpClient &client);
 		TcpClient();
 		virtual ~TcpClient();
 		void disconnect();

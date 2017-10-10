@@ -31,6 +31,12 @@
     <Filter Include="Source Files\Tcp">
       <UniqueIdentifier>{76285ca0-e4c2-4c95-b3e3-6f33c8e293ab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Sockets">
+      <UniqueIdentifier>{0dd257be-a85d-4b07-8843-c9d9094d7a8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Sockets">
+      <UniqueIdentifier>{e964e7df-b936-4460-bdb2-ce1686de92fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataReceivedEventArgs.hpp">
@@ -96,25 +102,7 @@
     <ClInclude Include="TcpConnection.hpp">
       <Filter>Header Files\Tcp</Filter>
     </ClInclude>
-    <ClInclude Include="Socket.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Bytes.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UdpSocket.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TcpSocket.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TcpClient.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TcpServer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SocketException.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Util.hpp">
@@ -128,6 +116,24 @@
     </ClInclude>
     <ClInclude Include="ManualResetEvent.hpp">
       <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpClient.hpp">
+      <Filter>Header Files\Sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpServer.hpp">
+      <Filter>Header Files\Sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpSocket.hpp">
+      <Filter>Header Files\Sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="UdpSocket.hpp">
+      <Filter>Header Files\Sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket.hpp">
+      <Filter>Header Files\Sockets</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketException.hpp">
+      <Filter>Header Files\Sockets</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -185,25 +191,7 @@
     <ClCompile Include="TcpConnection.cpp">
       <Filter>Source Files\Tcp</Filter>
     </ClCompile>
-    <ClCompile Include="Socket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Bytes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UdpSocket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TcpClient.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TcpSocket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TcpServer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SocketException.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HazelException.cpp">
@@ -223,6 +211,24 @@
     </ClCompile>
     <ClCompile Include="AutoResetEvent.cpp">
       <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpClient.cpp">
+      <Filter>Source Files\Sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket.cpp">
+      <Filter>Source Files\Sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpSocket.cpp">
+      <Filter>Source Files\Sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpServer.cpp">
+      <Filter>Source Files\Sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketException.cpp">
+      <Filter>Source Files\Sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="UdpSocket.cpp">
+      <Filter>Source Files\Sockets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
