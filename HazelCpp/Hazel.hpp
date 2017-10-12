@@ -51,10 +51,4 @@ namespace Hazel
 		Tcp = SOCK_STREAM, 
 		Udp = SOCK_DGRAM 
 	};
-
-	enum class IPMode
-	{
-		IPv4,
-		IPv6
-	};
 }

@@ -4,7 +4,7 @@
 
 namespace Hazel
 {
-	UdpConnectionListener::UdpConnectionListener(NetworkEndPoint end_point, IPMode mode) : UdpSocket(), mode(mode)
+	UdpConnectionListener::UdpConnectionListener(NetworkEndPoint end_point) : UdpSocket()
 	{
 		SetEndPoint(end_point);
 		//this.listener.SetSocketOption(SocketOptionLevel.IPv6, (SocketOptionName)27, false);????
@@ -33,7 +33,7 @@ namespace Hazel
 	{
 		long bytes_received = 0;
 		NetworkEndPoint remote_end_point;
-		if (((UdpConnectionListener*)(listener))->mode == IPMode::IPv4)
+		if (((UdpConnectionListener*)(listener))->GetEndPoint().is_v4())
 			remote_end_point = NetworkEndPoint("0.0.0.0:0");
 		else
 			remote_end_point = NetworkEndPoint("[::]:0");

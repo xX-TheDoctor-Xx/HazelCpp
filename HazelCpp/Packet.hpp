@@ -5,13 +5,12 @@
 #include "Stopwatch.hpp"
 #include "Bytes.hpp"
 #include "ObjectPool.hpp"
+#include "NetworkConnection.hpp"
 
-#include <atomic>
-
+//NetworkConnection here is always UdpConnection
 namespace Hazel
 {
-	class UdpConnection;
-
+	template<class TC>
 	class Packet
 	{
 		static ObjectPool<Packet> object_pool;
@@ -24,9 +23,9 @@ namespace Hazel
 		std::atomic_int retransmissions;
 		Stopwatch stopwatch;
 
-		UdpConnection *con;
+		NetworkConnection *con;
 
-		Timer<UdpConnection*, Packet&> timer;
+		Timer<TC> timer;
 		std::mutex timer_mutex;
 
 	public:
@@ -35,7 +34,8 @@ namespace Hazel
 
 		~Packet();
 
-		void Set(Bytes &data, UdpConnection *con, std::function<void(UdpConnection*, Packet&)> &resend_action, int timeout, std::function<void()> &ack_callback);
+		template<class T>
+		void Set(Bytes &data, TC *resend_action, int timeout, std::function<void()> &ack_callback);
 		Bytes GetData();
 		int GetLastTimeout();
 		void IncrementLastTimeout(int value);
@@ -50,7 +50,7 @@ namespace Hazel
 
 		void Recycle();
 
-		Timer<UdpConnection*, Packet&> &GetTimer();
+		Timer<TC> &GetTimer();
 		std::mutex &GetTimerMutex();
 
 		static Packet &GetObject();

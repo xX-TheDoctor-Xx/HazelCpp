@@ -58,7 +58,7 @@
 
 namespace Hazel
 {
-	class UdpSocket : public Socket
+	class UdpSocket : protected Socket
 	{
 	public:
 		UdpSocket();

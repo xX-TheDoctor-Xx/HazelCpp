@@ -69,9 +69,6 @@
     <ClInclude Include="UdpClientConnection.hpp">
       <Filter>Header Files\Udp</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkEndPoint.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="UdpConnectionListener.hpp">
       <Filter>Header Files\Udp</Filter>
     </ClInclude>
@@ -108,6 +105,9 @@
     <ClInclude Include="HazelUtil.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="NetworkEndPoint.hpp">
+      <Filter>Header Files\Sockets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataReceivedEventArgs.cpp">
@@ -133,9 +133,6 @@
     </ClCompile>
     <ClCompile Include="UdpClientConnection.cpp">
       <Filter>Source Files\Udp</Filter>
-    </ClCompile>
-    <ClCompile Include="NetworkEndPoint.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Hazel.cpp">
       <Filter>Source Files</Filter>
@@ -181,6 +178,9 @@
     </ClCompile>
     <ClCompile Include="HazelUtil.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkEndPoint.cpp">
+      <Filter>Source Files\Sockets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

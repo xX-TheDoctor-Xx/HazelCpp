@@ -2,17 +2,20 @@
 
 namespace Hazel
 {
-	Packet Packet::CreateObject()
+	template<class TC>
+	Packet<TC> Packet<TC>::CreateObject()
 	{
 		return Packet();
 	}
 
-	Packet::Packet() : data(nullptr, -1), ack_callback(std::function<void()>())
+	template<class TC>
+	Packet<TC>::Packet() : data(nullptr, -1), ack_callback(std::function<void()>())
 	{
 		object_pool.AssignObjectFactory(CreateObject);
 	}
 
-	Packet::Packet(const Packet &packet) : ack_callback(packet.ack_callback)
+	template<class TC>
+	Packet<TC>::Packet(const Packet &packet) : ack_callback(packet.ack_callback)
 	{
 		data = packet.data;
 		last_timeout.exchange(packet.last_timeout);
@@ -22,18 +25,19 @@ namespace Hazel
 		object_pool.AssignObjectFactory(CreateObject);
 	}
 
-	Packet::~Packet()
+	template<class TC>
+	Packet<TC>::~Packet()
 	{
 		Recycle();
 	}
 
-	void Packet::Set(Bytes &data, UdpConnection *con, std::function<void(UdpConnection*, Packet&)> &resend_action, int timeout, std::function<void()> &ack_callback)
+	template<class TC>
+	void Packet<TC>::Set(Bytes &data, TC *resend_action, int timeout, std::function<void()> &ack_callback)
 	{
 		this->data = data;
 
 		timer.SetInterval(timeout); // i dont think this is right
-		timer.Callback = resend_action;
-		timer.Start(con, *this);
+		timer.Start(resend_action);
 
 		last_timeout = timeout;
 		this->ack_callback = ack_callback;
@@ -41,57 +45,68 @@ namespace Hazel
 		stopwatch.Start();
 	}
 
-	Bytes Packet::GetData()
+	template<class TC>
+	Bytes Packet<TC>::GetData()
 	{
 		return data;
 	}
 
-	int Packet::GetLastTimeout()
+	template<class TC>
+	int Packet<TC>::GetLastTimeout()
 	{
 		return last_timeout.load();
 	}
 
-	void Packet::IncrementLastTimeout(int value)
+	template<class TC>
+	void Packet<TC>::IncrementLastTimeout(int value)
 	{
 		last_timeout += value;
 	}
 
-	bool Packet::GetAcknowledged()
+	template<class TC>
+	bool Packet<TC>::GetAcknowledged()
 	{
 		return acknowledged.load();
 	}
 
-	void Packet::SetAcknowledged(bool value)
+	template<class TC>
+	void Packet<TC>::SetAcknowledged(bool value)
 	{
 		acknowledged = value;
 	}
 
-	int Packet::GetRetransmissions()
+	template<class TC>
+	int Packet<TC>::GetRetransmissions()
 	{
 		return retransmissions.load();
 	}
 
-	void Packet::IncrementRetransmissions(int value)
+	template<class TC>
+	void Packet<TC>::IncrementRetransmissions(int value)
 	{
 		retransmissions += value;
 	}
 
-	void Packet::InvokeAckCallback()
+	template<class TC>
+	void Packet<TC>::InvokeAckCallback()
 	{
 		ack_callback();
 	}
 
-	void Packet::StopwatchStop()
+	template<class TC>
+	void Packet<TC>::StopwatchStop()
 	{
 		stopwatch.Stop();
 	}
 
-	long long Packet::GetRoundTime()
+	template<class TC>
+	long long Packet<TC>::GetRoundTime()
 	{
 		return stopwatch.GetElapsedMilliseconds();
 	}
 
-	void Packet::Recycle()
+	template<class TC>
+	void Packet<TC>::Recycle()
 	{
 		lock_mutex(timer_mutex, [this]()
 		{
@@ -107,17 +122,20 @@ namespace Hazel
 		object_pool.PutObject(*this);
 	}
 
-	Timer<UdpConnection*, Packet&>& Packet::GetTimer()
+	template<class TC>
+	Timer<TC> &Packet<TC>::GetTimer()
 	{
 		return timer;
 	}
 
-	std::mutex & Packet::GetTimerMutex()
+	template<class TC>
+	std::mutex & Packet<TC>::GetTimerMutex()
 	{
 		return timer_mutex;
 	}
 
-	Packet & Hazel::Packet::GetObject()
+	template<class TC>
+	Packet<TC> & Packet<TC>::GetObject()
 	{
 		return object_pool.GetObject();
 	}

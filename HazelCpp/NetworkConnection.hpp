@@ -17,7 +17,7 @@ namespace Hazel
 		std::function<void(DataReceivedEventArgs&)> DataReceived;
 		std::function<void(DisconnectedEventArgs&)> Disconnected;
 
-		NetworkEndPoint &GetEndpoint();
+		NetworkEndPoint &GetEndPoint();
 		void SetEndPoint(NetworkEndPoint &end_point);
 
 		ConnectionStatistics &GetStatistics();

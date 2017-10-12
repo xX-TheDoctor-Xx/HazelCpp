@@ -8,7 +8,7 @@ namespace Hazel
 		State = ConnectionState::NotConnected;
 	}
 
-	NetworkEndPoint &NetworkConnection::GetEndpoint()
+	NetworkEndPoint &NetworkConnection::GetEndPoint()
 	{
 		return end_point;
 	}

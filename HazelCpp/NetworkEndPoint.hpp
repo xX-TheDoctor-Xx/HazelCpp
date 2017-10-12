@@ -58,6 +58,7 @@
 
 #include <string>
 #include <algorithm>
+#include <vector>
 
 namespace Hazel
 {

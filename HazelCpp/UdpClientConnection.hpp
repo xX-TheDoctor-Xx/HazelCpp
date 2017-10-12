@@ -19,10 +19,8 @@ namespace Hazel
 		friend void udp_write_bytes_to_connection_callback(Socket *con);
 		friend void udp_hello_func(UdpClientConnection *con);
 
-		IPMode mode;
-
 	public:
-		UdpClientConnection(NetworkEndPoint &remote_end_point, IPMode mode);
+		UdpClientConnection(NetworkEndPoint &remote_end_point);
 		void Connect(Bytes &bytes = Bytes(nullptr, -1), int timeout = 5000) override;
 
 		void HandleDisconnect(HazelException &e) override;

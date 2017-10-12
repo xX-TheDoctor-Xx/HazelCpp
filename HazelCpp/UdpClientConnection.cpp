@@ -4,7 +4,7 @@
 
 namespace Hazel
 {
-	UdpClientConnection::UdpClientConnection(NetworkEndPoint &remote_end_point, IPMode mode) : mode(mode), UdpSocket()
+	UdpClientConnection::UdpClientConnection(NetworkEndPoint &remote_end_point) :  UdpSocket()
 	{
 		auto fn = [this, remote_end_point]()
 		{
@@ -51,7 +51,7 @@ namespace Hazel
 			try
 			{
 				Bytes &nonconst_bytes = const_cast<Bytes&>(bytes);
-				UdpSocket::BeginSendTo(nonconst_bytes.GetBytes(), nonconst_bytes.GetLength(), GetEndpoint(), std::function<void(Socket *con)>(udp_write_bytes_to_connection_callback), (Socket*)this);
+				UdpSocket::BeginSendTo(nonconst_bytes.GetBytes(), nonconst_bytes.GetLength(), GetEndPoint(), std::function<void(Socket *con)>(udp_write_bytes_to_connection_callback), (Socket*)this);
 			}
 			catch (SocketException&)
 			{
@@ -85,7 +85,7 @@ namespace Hazel
 
 			try
 			{
-				if (mode == IPMode::IPv4)
+				if (GetEndPoint().is_v4())
 					UdpSocket::bind(std::string("0.0.0.0:0"));
 				else
 					UdpSocket::bind(std::string("[::]:0"));
@@ -196,7 +196,7 @@ namespace Hazel
 	{
 		auto fn = [this]()
 		{
-			BeginReceiveFrom(65535, GetEndpoint(), std::function<void(Socket*)>(udp_read_callback_client), (Socket*)this);
+			BeginReceiveFrom(65535, GetEndPoint(), std::function<void(Socket*)>(udp_read_callback_client), (Socket*)this);
 		};
 
 		lock_mutex(socket_mutex, fn)

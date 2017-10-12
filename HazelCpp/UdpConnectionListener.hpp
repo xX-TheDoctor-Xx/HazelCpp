@@ -11,22 +11,22 @@ namespace Hazel
 
 	void udp_read_callback_listener(Socket *listener);
 
-	class UdpConnectionListener : public NetworkConnectionListener, public UdpSocket
+	class UdpConnectionListener : public NetworkConnectionListener, protected UdpSocket
 	{
+		friend Socket;
+
 		friend void udp_read_callback_listener(Socket *listener);
 
 		std::map<int, std::pair<NetworkEndPoint, UdpServerConnection*>> connections;
 		std::mutex listener_mutex;
 		std::mutex connections_mutex;
 
-		IPMode mode;
-
 		void RemoveConnectionTo(NetworkEndPoint end_point);
 
 		void SendData(Bytes bytes, NetworkEndPoint end_point);
 
 	public:
-		UdpConnectionListener(NetworkEndPoint end_point, IPMode mode);
+		UdpConnectionListener(NetworkEndPoint end_point);
 		void Start() override;
 		void StartListeningForData();
 		void Close();

@@ -11,19 +11,17 @@
 
 namespace Hazel
 {
-	class UdpConnection;
-
-	void packet_resend_action(UdpConnection *conn, Packet &packet);
-	void KeepAliveTimerCallback(UdpConnection *con);
+	class KeepAliveTimerCallback;
+	class PacketResendActionTimerCallback;
 
 	class UdpConnection : public NetworkConnection
 	{
-		friend void packet_resend_action(UdpConnection *conn, Packet &packet); // so that i can access the inacessible methods
-		friend void KeepAliveTimerCallback(UdpConnection *con);
+		friend class KeepAliveTimerCallback;
+		friend class PacketResendActionTimerCallback;
 
 		//KeepAlive
 		int keep_alive_interval = 10000;
-		Timer<UdpConnection*> keep_alive_timer;
+		Timer<KeepAliveTimerCallback> keep_alive_timer;
 		std::mutex keep_alive_timer_mutex;
 		bool keep_alive_timer_stopped;
 
@@ -43,7 +41,7 @@ namespace Hazel
 		void FinalizeFragmentedMessage(FragmentedMessage &message);
 
 		//Reliable
-		std::map<ushort, Packet> reliable_data_packets_sent;
+		std::map<ushort, Packet<PacketResendActionTimerCallback>> reliable_data_packets_sent;
 		std::mutex reliable_data_packets_sent_mutex;
 
 		std::atomic_int resend_timeout = 0;
@@ -113,5 +111,67 @@ namespace Hazel
 		void SendHello(Bytes &bytes, std::function<void(Args...)> &acknowledge_callback, ...);
 
 		void SendDisconnect();
+	};
+
+	class KeepAliveTimerCallback : public TimerCallback
+	{
+	public:
+		KeepAliveTimerCallback(UdpConnection *con) : con(con)
+		{
+		}
+
+		virtual void run()
+		{
+			con->SendHello(Bytes(nullptr, -1), std::function<void()>());
+		}
+
+	private:
+		UdpConnection *con;
+	};
+
+	class PacketResendActionTimerCallback : public TimerCallback
+	{
+	public:
+		PacketResendActionTimerCallback(UdpConnection *con, Packet<PacketResendActionTimerCallback> *packet) : con(con), packet(packet)
+		{
+		}
+
+		virtual void run()
+		{
+			auto fn = [this]()
+			{
+				if (!packet->GetAcknowledged())
+				{
+					packet->GetTimer().Stop();
+					packet->IncrementLastTimeout(packet->GetLastTimeout() * 2); //this is probably not right
+					packet->GetTimer().SetInterval(packet->GetLastTimeout()); //this is probably not right
+					//packet->GetTimer().Start<PacketResendActionTimerCallback>(this);
+					packet->IncrementRetransmissions(1);
+					if (packet->GetRetransmissions() > con->GetResendsBeforeDisconnect())
+					{
+						con->HandleDisconnect();
+						packet->SetAcknowledged(true);
+						packet->Recycle();
+
+						return;
+					}
+
+					try
+					{
+						con->WriteBytesToConnection(packet->GetData());
+					}
+					catch (HazelException&)
+					{
+						con->HandleDisconnect(HazelException("Could not resend data as connection is no longer connected"));
+					}
+				}
+			};
+
+			lock_mutex(packet->GetTimerMutex(), fn)
+		}
+
+	private:
+		UdpConnection *con;
+		Packet<PacketResendActionTimerCallback> *packet;
 	};
 }

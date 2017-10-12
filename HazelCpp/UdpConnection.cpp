@@ -23,18 +23,12 @@ namespace Hazel
 		ResetKeepAliveTimer();
 	}
 
-	void KeepAliveTimerCallback(UdpConnection *con)
-	{
-		con->SendHello(Bytes(nullptr, -1), std::function<void()>());
-	}
-
 	void UdpConnection::InitializeKeepAliveTimer()
 	{
 		auto fn = [this]()
 		{
 			keep_alive_timer.SetInterval(keep_alive_interval);
-			keep_alive_timer.Callback = KeepAliveTimerCallback;
-			keep_alive_timer.Start(this);
+			keep_alive_timer.Start(new KeepAliveTimerCallback(this));
 		};
 
 		lock_mutex(keep_alive_timer_mutex, fn)
@@ -45,7 +39,7 @@ namespace Hazel
 		auto fn = [this]()
 		{
 			keep_alive_timer.Stop();
-			keep_alive_timer.Start(this);
+			keep_alive_timer.Start(new KeepAliveTimerCallback(this));
 		};
 
 		lock_mutex(keep_alive_timer_mutex, fn)
@@ -220,40 +214,9 @@ namespace Hazel
 		return (t == 0) ? 0 : total_round_time.load() / t / 2;
 	}
 
-	void packet_resend_action(UdpConnection *conn, Packet &packet)
+	void packet_resend_action(NetworkConnection *conn, Packet<KeepAliveTimerCallback> &packet)
 	{
-		auto fn = [conn, packet]()
-		{
-			Packet &nonconst_packet = const_cast<Packet&>(packet);
-
-			if (!nonconst_packet.GetAcknowledged())
-			{
-				nonconst_packet.GetTimer().Stop();
-				nonconst_packet.IncrementLastTimeout(nonconst_packet.GetLastTimeout() * 2); //this is probably not right
-				nonconst_packet.GetTimer().SetInterval(nonconst_packet.GetLastTimeout()); //this is probably not right
-				nonconst_packet.GetTimer().Start(conn, nonconst_packet);
-				nonconst_packet.IncrementRetransmissions(1);
-				if (nonconst_packet.GetRetransmissions() > conn->GetResendsBeforeDisconnect())
-				{
-					conn->HandleDisconnect();
-					nonconst_packet.SetAcknowledged(true);
-					nonconst_packet.Recycle();
-
-					return;
-				}
-
-				try
-				{
-					conn->WriteBytesToConnection(nonconst_packet.GetData());
-				}
-				catch (HazelException&)
-				{
-					conn->HandleDisconnect(HazelException("Could not resend data as connection is no longer connected"));
-				}
-			}
-		};
-
-		lock_mutex(packet.GetTimerMutex(), fn)
+		
 	}
 
 	template<typename ...Args>
@@ -272,9 +235,9 @@ namespace Hazel
 			nonconst_bytes[offset] = (byte)((id >> 8) & 0xFF);
 			nonconst_bytes[offset + 1] = (byte)id;
 
-			Packet packet = Packet::GetObject();
+			Packet<PacketResendActionTimerCallback> packet = Packet<PacketResendActionTimerCallback>::GetObject();
 
-			packet.Set(const_cast<Bytes&>(buffer), this, std::function<void(UdpConnection*, Packet&)>(packet_resend_action), resend_timeout.load() > 0 ? resend_timeout.load() : (GetAveragePing() != 0 ? GetAveragePing() * 4 : 200), const_cast<std::function<void(Args...)>&>(ack_callback));
+			packet.Set<PacketResendActionTimerCallback>(const_cast<Bytes&>(buffer), new PacketResendActionTimerCallback(this, &packet), resend_timeout.load() > 0 ? resend_timeout.load() : (GetAveragePing() != 0 ? GetAveragePing() * 4 : 200), const_cast<std::function<void(Args...)>&>(ack_callback));
 
 			reliable_data_packets_sent.insert(std::make_pair(id, packet));
 		};
@@ -347,7 +310,7 @@ namespace Hazel
 		{
 			if (reliable_data_packets_sent.find(id) != reliable_data_packets_sent.end())
 			{
-				Packet packet = reliable_data_packets_sent.at(id);
+				Packet<PacketResendActionTimerCallback> packet = reliable_data_packets_sent.at(id);
 				packet.SetAcknowledged(true);
 
 				packet.InvokeAckCallback();
